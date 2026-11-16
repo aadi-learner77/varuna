@@ -313,12 +313,10 @@ for _, row in combined_geo[combined_geo["year"] == 2025].iterrows():
         continue
     # Skip false positives where the only difference is UNKNOWN vs empty taluk
     # (hobli rows correctly placed under their district, no taluk in any year).
-    if t25 == "UNKNOWN" and majority_geo[1] == "":
-        continue
-    # Skip same-name district/taluk rows: when 2025 district == majority district
-    # and the taluk name equals the district name, this is just the district header
-    # row being treated as a taluk of itself, not a real disagreement.
-    if d25.lower() == majority_geo[0].lower() and t25.lower() == d25.lower():
+    # Skip when the only difference is a case change in the taluk name (same
+    # district, same taluk).  Also skip when the 2025 taluk name is just the hobli
+    # name (the taluk was named after its hobli in 2025).
+    if d25.lower() == majority_geo[0].lower() and (t25.lower() == majority_geo[1].lower() or t25.lower() == key):
         continue
     # Keep one representative per (2025_taluk, majority_taluk) pair so we don't
     # list every hobli under a taluk whose name was spelled differently in 2025.
