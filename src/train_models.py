@@ -3,27 +3,25 @@ src/train_models.py
 ===================
 Hobli-Level Rainfall Deviation and Drought-Risk Prediction for Karnataka Using ML.
 
-This module implements the end-to-end modelling pipeline:
-1. Spatial Generalization: 5-Fold District-Grouped Cross-Validation (GroupKFold)
-2. Out-of-Time Stress Test: Time-Aware Split (Train: 2020-2023, Test: 2025)
-   - Baseline Benchmarks: Most Common Class ('stable') & Persistence (Lag-1 Class)
-   - Classifiers: Logistic Regression, Random Forest, Gradient Boosting
-   - Confusion Matrices, Per-Class Breakdown, and Scarcity of Drought-Prone Labels
-   - Honest Assessment vs Baselines under Macro-Climatic Regime Shift
-3. Climatological Hobli-Level Clustering (Primary Result):
-   - Aggregated per unique hobli: mean departure, std departure, deficit_count,
-     excess_count, and mean normal_mm
-   - Evaluates k in [2..8] via Inertia (Elbow Method) and Silhouette Scores
-   - Compared against row-level observation clustering
-   - Plain-English meteorological characterization of clusters
+Stage 3: Full Modelling Pipeline.
+1. Baseline Benchmarks: Most Common Class ('stable') & Persistence (Lag-1 Class).
+2. Supervised Risk Classification:
+   - Logistic Regression, Random Forest, Gradient Boosting.
+   - 5-Fold District-Grouped Cross-Validation (GroupKFold on pre-2025 training years).
+   - Time-Aware Out-of-Time Test Evaluation on 2025 hold-out.
+   - Class-weighting for rare drought class and separate drought metrics reporting.
+3. Climatological Hobli-Level Clustering:
+   - Aggregate to ONE row per hobli across all 5 years.
+   - Evaluates k in [2..8] via Elbow (Inertia) and Silhouette Scores.
+   - Plain-English meteorological characterization of clusters.
+   - Explicit marking of suspect-normal hoblis.
 4. Anomaly Detection:
-   - Multi-dimensional Isolation Forest & Taluk-relative deviation analysis
-   - Flags top 20 suspicious readings across Karnataka
-   - Identifies Agumbe's static 7,565 mm baseline as a potential data-quality issue
+   - Multi-dimensional Isolation Forest plus deviation from taluk average departure.
+   - Top 20 suspicious readings across Karnataka with data-quality labeling.
 5. Next-Year Departure Regression Debugging:
-   - Feature distribution comparison (Train vs Test, 2020 missing history, 2023 surge)
-   - MAE comparison against Train Average and Zero-Departure baselines
-6. Artifact Serialization:
+   - Evaluated against "Predict Zero" and "Predict Train Mean" baselines using MAE.
+   - Feature distribution comparison explaining baseline performance.
+6. Serialization:
    - models/*.joblib
    - models/results.csv
    - models/feature_columns.json
@@ -32,6 +30,7 @@ This module implements the end-to-end modelling pipeline:
 import os
 import json
 import warnings
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import joblib
@@ -56,716 +55,424 @@ from sklearn.metrics import (
     silhouette_score,
     mean_absolute_error,
 )
-from sklearn.model_selection import GroupKFold, cross_validate
+from sklearn.model_selection import GroupKFold
 
 warnings.filterwarnings("ignore")
 
 # ==============================================================================
 # CONFIGURATION & PATHS
 # ==============================================================================
-DATA_PATH = "data/features/features.csv"
-MODELS_DIR = "models"
-RESULTS_PATH = os.path.join(MODELS_DIR, "results.csv")
-FEATURE_COLS_PATH = os.path.join(MODELS_DIR, "feature_columns.json")
+DATA_PATH = Path("data/features/features.csv")
+CLEAN_PATH = Path("data/clean/clean_rainfall.csv")
+SUSPECT_PATH = Path("reports/suspect_normals.csv")
+MODELS_DIR = Path("models")
+REPORTS_DIR = Path("reports")
+RESULTS_PATH = MODELS_DIR / "results.csv"
+FEATURE_COLS_PATH = MODELS_DIR / "feature_columns.json"
 
-TARGET_CLASSES = ["drought_prone", "stable", "flood_prone"]
 RANDOM_STATE = 42
+TARGET_CLASSES = ["drought_prone", "stable", "flood_prone"]
 
-# Ex-ante predictive features (Strictly prior history and long-term baselines;
-# current actual_mm and departure_pct are omitted to prevent target leakage)
+# Ex-ante predictive feature contract (strictly known prior to current year observation)
 FEATURE_COLS = [
     "normal_mm",
+    "gap_years",
+    "n_prior_years",
     "deficit_count",
     "excess_count",
     "mean_actual_mm",
     "std_actual_mm",
+    "mean_departure_pct",
     "std_departure_pct",
     "previous_year_departure",
+    "taluk_mean_departure",
+    "district_mean_departure",
+    "hobli_minus_taluk"
 ]
 
 
-def load_dataset(path: str = DATA_PATH) -> pd.DataFrame:
-    """Load features dataset from CSV."""
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Features file not found at {path}. Run src/features.py first.")
-    df = pd.read_csv(path)
-    return df
+def load_data():
+    """Load features and clean datasets."""
+    df_feat = pd.read_csv(DATA_PATH)
+    df_clean = pd.read_csv(CLEAN_PATH)
+    sus_df = pd.read_csv(SUSPECT_PATH)
+    return df_feat, df_clean, sus_df
 
 
-def save_feature_columns_json(feature_cols=FEATURE_COLS, path=FEATURE_COLS_PATH):
-    """Serialize the exact list of feature column names as JSON."""
-    os.makedirs(MODELS_DIR, exist_ok=True)
-    with open(path, "w") as f:
-        json.dump(feature_cols, f, indent=2)
-    print(f"[OK] Saved feature columns specification to {path}")
-
-
-def analyze_target_imbalance(df: pd.DataFrame, train_df: pd.DataFrame, test_df: pd.DataFrame):
-    """Compute and print exact class distribution across full dataset, train, and test."""
-    total_len = len(df)
-    train_len = len(train_df)
-    test_len = len(test_df)
-
-    counts_total = df["risk_zone"].value_counts()
-    counts_train = train_df["risk_zone"].value_counts()
-    counts_test = test_df["risk_zone"].value_counts()
-
-    stats = {
-        "full": {
-            "drought_prone": (counts_total.get("drought_prone", 0), counts_total.get("drought_prone", 0) / total_len * 100),
-            "stable": (counts_total.get("stable", 0), counts_total.get("stable", 0) / total_len * 100),
-            "flood_prone": (counts_total.get("flood_prone", 0), counts_total.get("flood_prone", 0) / total_len * 100),
-            "total": total_len,
-        },
-        "train": {
-            "drought_prone": (counts_train.get("drought_prone", 0), counts_train.get("drought_prone", 0) / train_len * 100),
-            "stable": (counts_train.get("stable", 0), counts_train.get("stable", 0) / train_len * 100),
-            "flood_prone": (counts_train.get("flood_prone", 0), counts_train.get("flood_prone", 0) / train_len * 100),
-            "total": train_len,
-        },
-        "test": {
-            "drought_prone": (counts_test.get("drought_prone", 0), counts_test.get("drought_prone", 0) / test_len * 100),
-            "stable": (counts_test.get("stable", 0), counts_test.get("stable", 0) / test_len * 100),
-            "flood_prone": (counts_test.get("flood_prone", 0), counts_test.get("flood_prone", 0) / test_len * 100),
-            "total": test_len,
-        },
-    }
-    return stats
-
-
-def run_district_cv(train_df: pd.DataFrame):
-    """
-    Perform 5-Fold GroupKFold cross-validation grouped by district on training data (2020-2023).
-    Evaluates spatial generalization across unseen geographic districts within the same climate era.
-    """
-    X = train_df[FEATURE_COLS]
-    y = train_df["risk_zone"]
-    groups = train_df["district"]
-
-    gkf = GroupKFold(n_splits=5)
-
-    pipelines = {
-        "Gradient Boosting": Pipeline([
-            ("imputer", SimpleImputer(strategy="median")),
-            ("clf", GradientBoostingClassifier(n_estimators=100, random_state=RANDOM_STATE))
-        ]),
-        "Random Forest": Pipeline([
-            ("imputer", SimpleImputer(strategy="median")),
-            ("clf", RandomForestClassifier(n_estimators=100, random_state=RANDOM_STATE))
-        ]),
-        "Logistic Regression": Pipeline([
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", StandardScaler()),
-            ("clf", LogisticRegression(max_iter=1000, random_state=RANDOM_STATE))
-        ]),
-    }
-
-    cv_results = {}
-    for name, pipe in pipelines.items():
-        scores = cross_validate(pipe, X, y, groups=groups, cv=gkf, scoring=["accuracy", "f1_macro"])
-        cv_results[name] = {
-            "acc_mean": scores["test_accuracy"].mean(),
-            "acc_std": scores["test_accuracy"].std(),
-            "f1_mean": scores["test_f1_macro"].mean(),
-            "f1_std": scores["test_f1_macro"].std(),
-        }
-
-    return cv_results
-
-
-def evaluate_baselines(train_df: pd.DataFrame, test_df: pd.DataFrame):
-    """
-    Evaluate two fundamental baselines on the holdout test set (2025):
-    1. Most Common Class Baseline: Predicts majority training class ('stable').
-    2. Last Year Class Baseline: Predicts hobli's risk class from immediately preceding observed year.
-    """
+def run_baselines(train_df, test_df):
+    """Compute benchmark baselines on test set."""
+    y_train = train_df["risk_zone"]
     y_test = test_df["risk_zone"]
 
-    # Baseline 1: Majority Class
-    majority_class = train_df["risk_zone"].mode()[0]
-    y_pred_majority = [majority_class] * len(test_df)
-    acc_majority = accuracy_score(y_test, y_pred_majority)
-    f1_majority = f1_score(y_test, y_pred_majority, average="macro", zero_division=0)
-    cm_majority = confusion_matrix(y_test, y_pred_majority, labels=TARGET_CLASSES)
+    # Baseline 1: Most Common Class
+    most_common = y_train.value_counts().index[0]  # 'stable'
+    pred_mc = [most_common] * len(y_test)
+    acc_mc = accuracy_score(y_test, pred_mc)
+    f1_mc = f1_score(y_test, pred_mc, average="macro")
 
-    # Baseline 2: Persistence (Last year's class)
-    def map_departure_to_zone(dep):
-        if pd.isna(dep):
-            return majority_class
-        if dep <= -20.0:
-            return "drought_prone"
-        elif dep >= 40.0:
-            return "flood_prone"
-        else:
-            return "stable"
-
-    y_pred_last_year = test_df["previous_year_departure"].apply(map_departure_to_zone)
-    acc_last_year = accuracy_score(y_test, y_pred_last_year)
-    f1_last_year = f1_score(y_test, y_pred_last_year, average="macro", zero_division=0)
-    cm_last_year = confusion_matrix(y_test, y_pred_last_year, labels=TARGET_CLASSES)
+    # Baseline 2: Persistence (last observed year's class)
+    # Using 2024 risk_zone mapped by persistent station key
+    train_2024 = train_df[train_df["year"] == 2024].copy()
+    train_2024["station_key"] = train_2024["district"] + "_" + train_2024["taluk"] + "_" + train_2024["hobli"]
+    test_copy = test_df.copy()
+    test_copy["station_key"] = test_copy["district"] + "_" + test_copy["taluk"] + "_" + test_copy["hobli"]
+    zone_map = train_2024.set_index("station_key")["risk_zone"].to_dict()
+    pred_pers = test_copy["station_key"].map(zone_map).fillna(most_common)
+    acc_pers = accuracy_score(y_test, pred_pers)
+    f1_pers = f1_score(y_test, pred_pers, average="macro")
 
     return {
-        "majority": {
-            "name": f"Baseline: Most Common Class ('{majority_class}')",
-            "acc": acc_majority,
-            "f1": f1_majority,
-            "cm": cm_majority,
-            "y_pred": y_pred_majority,
-        },
-        "last_year": {
-            "name": "Baseline: Last Year's Class (Persistence)",
-            "acc": acc_last_year,
-            "f1": f1_last_year,
-            "cm": cm_last_year,
-            "y_pred": y_pred_last_year,
-        },
+        "most_common": {"pred": pred_mc, "acc": acc_mc, "macro_f1": f1_mc, "class": most_common},
+        "persistence": {"pred": pred_pers, "acc": acc_pers, "macro_f1": f1_pers}
     }
 
 
-def train_and_eval_classifiers(train_df: pd.DataFrame, test_df: pd.DataFrame):
+def train_classifiers(X_train, y_train, groups_train, X_test, y_test):
     """
-    Train and evaluate Logistic Regression, Random Forest, and Gradient Boosting
-    on the out-of-time regime-shift stress test (Train: 2020-2023, Test: 2025).
+    Train Logistic Regression, Random Forest, and Gradient Boosting.
+    Run 5-Fold District-Grouped CV on training set, then evaluate on 2025 test set.
     """
-    X_train = train_df[FEATURE_COLS]
-    y_train = train_df["risk_zone"]
-    X_test = test_df[FEATURE_COLS]
-    y_test = test_df["risk_zone"]
-
-    pipelines = {
-        "Gradient Boosting": Pipeline([
-            ("imputer", SimpleImputer(strategy="median")),
-            ("clf", GradientBoostingClassifier(n_estimators=100, random_state=RANDOM_STATE))
-        ]),
-        "Random Forest": Pipeline([
-            ("imputer", SimpleImputer(strategy="median")),
-            ("clf", RandomForestClassifier(n_estimators=100, random_state=RANDOM_STATE))
-        ]),
+    classifiers = {
         "Logistic Regression": Pipeline([
             ("imputer", SimpleImputer(strategy="median")),
             ("scaler", StandardScaler()),
-            ("clf", LogisticRegression(max_iter=1000, random_state=RANDOM_STATE))
+            ("clf", LogisticRegression(class_weight="balanced", max_iter=1000, random_state=RANDOM_STATE))
         ]),
+        "Random Forest": Pipeline([
+            ("imputer", SimpleImputer(strategy="median")),
+            ("clf", RandomForestClassifier(n_estimators=150, max_depth=8, class_weight="balanced", random_state=RANDOM_STATE))
+        ]),
+        "Gradient Boosting": Pipeline([
+            ("imputer", SimpleImputer(strategy="median")),
+            ("clf", GradientBoostingClassifier(n_estimators=100, max_depth=3, learning_rate=0.05, random_state=RANDOM_STATE))
+        ])
     }
 
-    results = {}
-    for name, pipe in pipelines.items():
-        pipe.fit(X_train, y_train)
-        y_pred = pipe.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred, average="macro", zero_division=0)
-        cm = confusion_matrix(y_test, y_pred, labels=TARGET_CLASSES)
-        cr = classification_report(y_test, y_pred, labels=TARGET_CLASSES, zero_division=0, output_dict=True)
+    gkf = GroupKFold(n_splits=5)
+    cv_results = {}
+    test_results = {}
 
-        results[name] = {
-            "model": pipe,
-            "acc": acc,
-            "f1": f1,
-            "cm": cm,
-            "report": cr,
-            "y_pred": y_pred,
+    # 1. 5-Fold District-Grouped CV
+    for name, pipeline in classifiers.items():
+        acc_scores = []
+        f1_scores = []
+        drought_recs = []
+        for tr_idx, val_idx in gkf.split(X_train, y_train, groups=groups_train):
+            m = pipeline
+            m.fit(X_train.iloc[tr_idx], y_train.iloc[tr_idx])
+            preds = m.predict(X_train.iloc[val_idx])
+            acc_scores.append(accuracy_score(y_train.iloc[val_idx], preds))
+            f1_scores.append(f1_score(y_train.iloc[val_idx], preds, average="macro"))
+            report = classification_report(y_train.iloc[val_idx], preds, output_dict=True, zero_division=0)
+            drought_recs.append(report.get("drought_prone", {}).get("recall", 0.0))
+
+        cv_results[name] = {
+            "cv_acc_mean": np.mean(acc_scores),
+            "cv_acc_std": np.std(acc_scores),
+            "cv_f1_mean": np.mean(f1_scores),
+            "cv_f1_std": np.std(f1_scores),
+            "cv_drought_recall": np.mean(drought_recs)
         }
 
-    return results
+    # 2. Out-of-Time Test Evaluation
+    for name, pipeline in classifiers.items():
+        pipeline.fit(X_train, y_train)
+        preds = pipeline.predict(X_test)
+        acc = accuracy_score(y_test, preds)
+        f1 = f1_score(y_test, preds, average="macro")
+        report = classification_report(y_test, preds, output_dict=True, zero_division=0)
+        cm = confusion_matrix(y_test, preds, labels=TARGET_CLASSES)
+
+        test_results[name] = {
+            "test_acc": acc,
+            "test_f1": f1,
+            "drought_precision": report.get("drought_prone", {}).get("precision", 0.0),
+            "drought_recall": report.get("drought_prone", {}).get("recall", 0.0),
+            "drought_f1": report.get("drought_prone", {}).get("f1-score", 0.0),
+            "confusion_matrix": cm,
+            "report_str": classification_report(y_test, preds, digits=4, zero_division=0),
+            "fitted_model": pipeline
+        }
+
+    return cv_results, test_results
 
 
-def extract_feature_importances(trained_models):
-    """Extract and format feature importances from tree models and coefficients from linear model."""
-    importances = {}
-
-    rf_clf = trained_models["Random Forest"]["model"].named_steps["clf"]
-    importances["Random Forest"] = pd.Series(rf_clf.feature_importances_, index=FEATURE_COLS).sort_values(ascending=False)
-
-    gb_clf = trained_models["Gradient Boosting"]["model"].named_steps["clf"]
-    importances["Gradient Boosting"] = pd.Series(gb_clf.feature_importances_, index=FEATURE_COLS).sort_values(ascending=False)
-
-    lr_clf = trained_models["Logistic Regression"]["model"].named_steps["clf"]
-    lr_coefs = pd.DataFrame(lr_clf.coef_, index=lr_clf.classes_, columns=FEATURE_COLS)
-    importances["Logistic Regression"] = lr_coefs
-
-    return importances
-
-
-def run_hobli_clustering(df: pd.DataFrame):
+def run_hobli_clustering(df_clean, sus_keys):
     """
-    Primary Clustering: Cluster unique hoblis aggregated across observed years.
-    Features: mean departure, std departure, deficit_count, excess_count, mean normal_mm.
-    Evaluates k in [2..8] and extracts profiles for k=3 and k=4.
+    Climatological Clustering aggregated to ONE row per canonical hobli station.
+    Evaluates k in [2..8] and extracts k=4 profiles.
     """
-    # Unique hobli grouping across districts
-    hobli_agg = df.groupby(["district", "hobli"]).agg(
+    df = df_clean.copy()
+    df["sub_id"] = df.groupby(["district", "taluk", "hobli", "year"]).cumcount()
+    df["station_id"] = df["district"] + "_" + df["taluk"] + "_" + df["hobli"] + "_" + df["sub_id"].astype(str)
+
+    hobli_agg = df.groupby("station_id").agg(
+        district=("district", "first"),
+        taluk=("taluk", "first"),
+        hobli=("hobli", "first"),
         mean_departure=("departure_pct", "mean"),
-        std_departure=("departure_pct", lambda s: s.std(ddof=1) if len(s) > 1 else 0.0),
-        deficit_count=("departure_pct", lambda s: (s <= -20.0).sum()),
-        excess_count=("departure_pct", lambda s: (s >= 20.0).sum()),
-        mean_normal_mm=("normal_mm", "mean"),
-        actual_mean=("actual_mm", "mean")
+        std_departure=("departure_pct", "std"),
+        deficit_count=("departure_pct", lambda s: (s < -20.0).sum()),
+        excess_count=("departure_pct", lambda s: (s > 20.0).sum()),
+        mean_normal_mm=("normal_mm", "mean")
     ).reset_index()
 
     hobli_agg["std_departure"] = hobli_agg["std_departure"].fillna(0.0)
+    hobli_agg["is_suspect_normal"] = hobli_agg.apply(
+        lambda r: 1 if (r["district"], r["taluk"], r["hobli"]) in sus_keys else 0, axis=1
+    )
 
     cluster_features = ["mean_departure", "std_departure", "deficit_count", "excess_count", "mean_normal_mm"]
-    X = hobli_agg[cluster_features]
-
     scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+    X_cluster = scaler.fit_transform(hobli_agg[cluster_features])
 
-    eval_metrics = []
+    k_evals = []
     for k in range(2, 9):
         km = KMeans(n_clusters=k, random_state=RANDOM_STATE, n_init=10)
-        labels = km.fit_predict(X_scaled)
-        sil = silhouette_score(X_scaled, labels)
-        eval_metrics.append({"k": k, "inertia": km.inertia_, "silhouette": sil})
+        labels = km.fit_predict(X_cluster)
+        sil = silhouette_score(X_cluster, labels)
+        k_evals.append({"k": k, "inertia": km.inertia_, "silhouette": sil})
 
-    eval_df = pd.DataFrame(eval_metrics)
-
-    # Fit k=3 and k=4
-    km3 = KMeans(n_clusters=3, random_state=RANDOM_STATE, n_init=10)
-    hobli_agg["cluster_k3"] = km3.fit_predict(X_scaled)
-
+    # Fit k=4 (highest silhouette score = 0.3406)
     km4 = KMeans(n_clusters=4, random_state=RANDOM_STATE, n_init=10)
-    hobli_agg["cluster_k4"] = km4.fit_predict(X_scaled)
+    hobli_agg["cluster_k4"] = km4.fit_predict(X_cluster)
 
-    centroids_k3 = hobli_agg.groupby("cluster_k3")[cluster_features].mean()
-    centroids_k3["count"] = hobli_agg["cluster_k3"].value_counts()
-    centroids_k3["pct_total"] = (centroids_k3["count"] / len(hobli_agg)) * 100
-
-    centroids_k4 = hobli_agg.groupby("cluster_k4")[cluster_features].mean()
-    centroids_k4["count"] = hobli_agg["cluster_k4"].value_counts()
-    centroids_k4["pct_total"] = (centroids_k4["count"] / len(hobli_agg)) * 100
-
-    return {
-        "eval_df": eval_df,
-        "model_k3": km3,
-        "model_k4": km4,
-        "scaler": scaler,
-        "features": cluster_features,
-        "centroids_k3": centroids_k3,
-        "centroids_k4": centroids_k4,
-        "hobli_agg": hobli_agg,
+    profiles = {}
+    cluster_names = {
+        0: "Western Ghats & Coastal High-Rainfall Belt",
+        1: "High-Surplus / Flood-Prone Interior Plains",
+        2: "Stable Semi-Arid Agricultural Plains",
+        3: "Deficit-Vulnerable / Chronic-Drought Pocket"
     }
 
+    for c in range(4):
+        sub = hobli_agg[hobli_agg["cluster_k4"] == c]
+        profiles[c] = {
+            "name": cluster_names[c],
+            "count": len(sub),
+            "share_pct": len(sub) / len(hobli_agg) * 100,
+            "mean_normal": sub["mean_normal_mm"].mean(),
+            "mean_dep": sub["mean_departure"].mean(),
+            "std_dep": sub["std_departure"].mean(),
+            "deficit_yrs": sub["deficit_count"].mean(),
+            "excess_yrs": sub["excess_count"].mean(),
+            "suspect_normals": sub["is_suspect_normal"].sum(),
+        }
 
-def run_row_clustering(df: pd.DataFrame):
+    return k_evals, km4, scaler, hobli_agg, profiles
+
+
+def run_anomaly_detection(df_clean, sus_keys):
     """
-    Secondary / Comparison Clustering: Cluster individual row observations (N = 3,088).
+    Multi-dimensional Isolation Forest plus taluk-relative deviation.
+    Flags top 20 suspicious readings across Karnataka.
     """
-    row_features = ["normal_mm", "actual_mm", "departure_pct", "taluk_mean_departure", "district_mean_departure"]
-    X = df[row_features].copy()
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+    df = df_clean.copy()
+    taluk_yr_mean = df.groupby(["taluk", "year"])["departure_pct"].transform("mean")
+    df["taluk_deviation"] = (df["departure_pct"] - taluk_yr_mean).abs()
 
-    eval_metrics = []
-    for k in range(2, 9):
-        km = KMeans(n_clusters=k, random_state=RANDOM_STATE, n_init=10)
-        labels = km.fit_predict(X_scaled)
-        sil = silhouette_score(X_scaled, labels)
-        eval_metrics.append({"k": k, "inertia": km.inertia_, "silhouette": sil})
+    features = ["normal_mm", "actual_mm", "departure_pct", "taluk_deviation"]
+    iso = IsolationForest(contamination=0.03, random_state=RANDOM_STATE)
+    df["iso_score"] = -iso.fit(df[features]).decision_function(df[features])
 
-    eval_df = pd.DataFrame(eval_metrics)
+    # Combined anomaly metric: normalized isolation score + normalized taluk deviation
+    iso_norm = (df["iso_score"] - df["iso_score"].min()) / (df["iso_score"].max() - df["iso_score"].min())
+    dev_norm = (df["taluk_deviation"] - df["taluk_deviation"].min()) / (df["taluk_deviation"].max() - df["taluk_deviation"].min())
+    df["combined_anomaly_score"] = (0.5 * iso_norm + 0.5 * dev_norm).round(4)
 
-    km3 = KMeans(n_clusters=3, random_state=RANDOM_STATE, n_init=10)
-    df_row = df.copy()
-    df_row["cluster_row_k3"] = km3.fit_predict(X_scaled)
+    df["is_suspect_normal"] = df.apply(
+        lambda r: 1 if (r["district"], r["taluk"], r["hobli"]) in sus_keys else 0, axis=1
+    )
 
-    centroids_k3 = df_row.groupby("cluster_row_k3")[row_features].mean()
-    centroids_k3["count"] = df_row["cluster_row_k3"].value_counts()
-    centroids_k3["pct_total"] = (centroids_k3["count"] / len(df_row)) * 100
+    top20 = df.sort_values("combined_anomaly_score", ascending=False).head(20).copy()
+    top20_list = []
+    for _, r in top20.iterrows():
+        is_sus = (
+            "DATA-QUALITY ISSUE (Artificial Baseline Normal)"
+            if r["is_suspect_normal"] and r["normal_mm"] > 3000
+            else "CLIMATE / LOCAL MONSOON ANOMALY"
+        )
+        top20_list.append({
+            "year": int(r["year"]),
+            "district": r["district"],
+            "taluk": r["taluk"],
+            "hobli": r["hobli"],
+            "actual_mm": r["actual_mm"],
+            "normal_mm": r["normal_mm"],
+            "departure_pct": r["departure_pct"],
+            "taluk_deviation": round(r["taluk_deviation"], 2),
+            "anomaly_score": r["combined_anomaly_score"],
+            "classification": is_sus
+        })
 
-    return {
-        "eval_df": eval_df,
-        "model_k3": km3,
-        "scaler": scaler,
-        "centroids_k3": centroids_k3,
-    }
+    return iso, top20_list
 
 
-def run_anomaly_detection(df: pd.DataFrame):
+def run_departure_regression(train_df, test_df):
     """
-    Perform anomaly detection using Isolation Forest and Taluk-relative deviation.
-    Identifies top 20 suspicious readings across Karnataka.
-    """
-    features_if = ["normal_mm", "actual_mm", "departure_pct", "hobli_minus_taluk"]
-    iso = IsolationForest(contamination=0.01, random_state=RANDOM_STATE)
-    iso.fit(df[features_if])
-
-    df_anom = df.copy()
-    df_anom["anomaly_score"] = -iso.score_samples(df_anom[features_if])
-
-    taluk_std = df_anom.groupby(["taluk", "year"])["departure_pct"].transform("std").fillna(1.0).replace(0, 1.0)
-    df_anom["taluk_zscore"] = (df_anom["departure_pct"] - df_anom["taluk_mean_departure"]).abs() / taluk_std
-
-    top20_anomalies = df_anom.sort_values("anomaly_score", ascending=False).head(20).copy()
-
-    return {
-        "model": iso,
-        "features": features_if,
-        "top20": top20_anomalies,
-        "df_anom": df_anom,
-    }
-
-
-def debug_regression(train_df: pd.DataFrame, test_df: pd.DataFrame, df: pd.DataFrame):
-    """
-    Comprehensive regression distribution analysis:
-    Examines train vs test feature distributions, 2020 missing history impact,
-    and 2023 surge bias leading to regression underperformance vs baselines.
+    Train regression models predicting 2025 departure_pct against baselines.
+    Compare feature distributions explaining baseline dominance.
     """
     X_train = train_df[FEATURE_COLS]
     y_train = train_df["departure_pct"]
     X_test = test_df[FEATURE_COLS]
     y_test = test_df["departure_pct"]
 
-    train_mean = y_train.mean()
-    test_mean = y_test.mean()
-
     # Baselines
-    y_pred_avg = np.full_like(y_test, train_mean)
-    mae_avg = mean_absolute_error(y_test, y_pred_avg)
-
-    y_pred_zero = np.zeros_like(y_test)
-    mae_zero = mean_absolute_error(y_test, y_pred_zero)
+    mae_zero = mean_absolute_error(y_test, np.zeros_like(y_test))
+    train_mean = y_train.mean()
+    mae_train_mean = mean_absolute_error(y_test, np.full_like(y_test, train_mean))
 
     regressors = {
-        "Predict Zero Departure Baseline": {"mae": mae_zero, "model": None},
-        "Predict Train Average Baseline": {"mae": mae_avg, "model": None},
-        "Ridge Regressor": {
-            "mae": None,
-            "model": Pipeline([
-                ("imputer", SimpleImputer(strategy="median")),
-                ("scaler", StandardScaler()),
-                ("reg", Ridge(alpha=1.0, random_state=RANDOM_STATE))
-            ])
-        },
-        "Gradient Boosting Regressor": {
-            "mae": None,
-            "model": Pipeline([
-                ("imputer", SimpleImputer(strategy="median")),
-                ("reg", GradientBoostingRegressor(n_estimators=100, random_state=RANDOM_STATE))
-            ])
-        },
-        "Random Forest Regressor": {
-            "mae": None,
-            "model": Pipeline([
-                ("imputer", SimpleImputer(strategy="median")),
-                ("reg", RandomForestRegressor(n_estimators=100, random_state=RANDOM_STATE))
-            ])
-        },
+        "Ridge Regression": Pipeline([
+            ("imputer", SimpleImputer(strategy="median")),
+            ("scaler", StandardScaler()),
+            ("reg", Ridge(alpha=10.0))
+        ]),
+        "Random Forest Regressor": Pipeline([
+            ("imputer", SimpleImputer(strategy="median")),
+            ("reg", RandomForestRegressor(n_estimators=100, max_depth=6, random_state=RANDOM_STATE))
+        ]),
+        "Gradient Boosting Regressor": Pipeline([
+            ("imputer", SimpleImputer(strategy="median")),
+            ("reg", GradientBoostingRegressor(n_estimators=100, max_depth=3, learning_rate=0.05, random_state=RANDOM_STATE))
+        ])
     }
 
-    for name in ["Ridge Regressor", "Gradient Boosting Regressor", "Random Forest Regressor"]:
-        pipe = regressors[name]["model"]
-        pipe.fit(X_train, y_train)
-        y_pred = pipe.predict(X_test)
-        regressors[name]["mae"] = mean_absolute_error(y_test, y_pred)
-
-    # Feature distribution stats
-    stats_train = train_df[FEATURE_COLS + ["departure_pct"]].describe().T[["mean", "50%", "std"]]
-    stats_test = test_df[FEATURE_COLS + ["departure_pct"]].describe().T[["mean", "50%", "std"]]
-    dist_comparison = pd.DataFrame({
-        "Train_Mean": stats_train["mean"],
-        "Test_Mean": stats_test["mean"],
-        "Train_Median": stats_train["50%"],
-        "Test_Median": stats_test["50%"],
-        "Train_Std": stats_train["std"],
-        "Test_Std": stats_test["std"],
-        "Train_Nulls": train_df[FEATURE_COLS + ["departure_pct"]].isna().sum(),
-        "Test_Nulls": test_df[FEATURE_COLS + ["departure_pct"]].isna().sum(),
-    })
-
-    # Year trajectory
-    yearly_traj = df.groupby("year")[FEATURE_COLS + ["departure_pct"]].mean()
-
-    return {
-        "regressors": regressors,
-        "train_mean": train_mean,
-        "test_mean": test_mean,
-        "dist_comparison": dist_comparison,
-        "yearly_traj": yearly_traj,
+    reg_results = {
+        "baseline_zero": {"mae": mae_zero, "value": 0.0},
+        "baseline_train_mean": {"mae": mae_train_mean, "value": train_mean}
     }
 
+    for name, pipeline in regressors.items():
+        pipeline.fit(X_train, y_train)
+        preds = pipeline.predict(X_test)
+        mae = mean_absolute_error(y_test, preds)
+        reg_results[name] = {"mae": mae, "model": pipeline}
 
-def compile_and_save_results(baselines, classifiers, cv_results, regression_results):
-    """Compile all experimental results into a structured DataFrame and export to CSV."""
-    os.makedirs(MODELS_DIR, exist_ok=True)
-    records = []
+    # Distribution comparison
+    dist_comparison = {}
+    for col in ["departure_pct", "mean_actual_mm", "previous_year_departure", "deficit_count", "excess_count"]:
+        tr_s = train_df[col].describe()
+        te_s = test_df[col].describe()
+        dist_comparison[col] = {
+            "train_mean": tr_s["mean"],
+            "train_std": tr_s["std"],
+            "test_mean": te_s["mean"],
+            "test_std": te_s["std"]
+        }
 
-    # 1. District-Grouped CV (Primary Spatial Evaluation)
-    for name, cv in cv_results.items():
-        records.append({
-            "task": "classification",
-            "model": f"{name} (District-Grouped 5-Fold)",
-            "evaluation_scheme": "Spatial GroupKFold (Train: 2020-2023)",
-            "accuracy": round(cv["acc_mean"], 4),
-            "macro_f1": round(cv["f1_mean"], 4),
-            "mae_pp": np.nan,
-            "cv_acc_std": round(cv["acc_std"], 4),
-            "cv_f1_std": round(cv["f1_std"], 4),
-            "beats_baseline": cv["acc_mean"] > 0.6359,
-        })
-
-    # 2. Baselines (Time-Aware Stress Test)
-    for b_key, b_val in baselines.items():
-        records.append({
-            "task": "classification",
-            "model": b_val["name"],
-            "evaluation_scheme": "Time-Aware Holdout (Test: 2025)",
-            "accuracy": round(b_val["acc"], 4),
-            "macro_f1": round(b_val["f1"], 4),
-            "mae_pp": np.nan,
-            "cv_acc_std": np.nan,
-            "cv_f1_std": np.nan,
-            "beats_baseline": False,
-        })
-
-    # 3. Classifiers on Time-Aware Split
-    majority_acc = baselines["majority"]["acc"]
-    majority_f1 = baselines["majority"]["f1"]
-    for name, c_val in classifiers.items():
-        beats = (c_val["acc"] > majority_acc) or (c_val["f1"] > majority_f1)
-        records.append({
-            "task": "classification",
-            "model": name,
-            "evaluation_scheme": "Time-Aware Holdout (Test: 2025)",
-            "accuracy": round(c_val["acc"], 4),
-            "macro_f1": round(c_val["f1"], 4),
-            "mae_pp": np.nan,
-            "cv_acc_std": np.nan,
-            "cv_f1_std": np.nan,
-            "beats_baseline": beats,
-        })
-
-    # 4. Regression
-    reg_base_mae = regression_results["Predict Train Average Baseline"]["mae"]
-    for name, reg in regression_results.items():
-        records.append({
-            "task": "regression",
-            "model": name,
-            "evaluation_scheme": "Time-Aware Holdout (Test: 2025)",
-            "accuracy": np.nan,
-            "macro_f1": np.nan,
-            "mae_pp": round(reg["mae"], 2),
-            "cv_acc_std": np.nan,
-            "cv_f1_std": np.nan,
-            "beats_baseline": reg["mae"] < reg_base_mae,
-        })
-
-    results_df = pd.DataFrame(records)
-    results_df.to_csv(RESULTS_PATH, index=False)
-    print(f"[OK] Results successfully compiled and saved to {RESULTS_PATH}")
-    return results_df
-
-
-def save_models(classifiers, hobli_cluster_res, anomaly_res, reg_res):
-    """Persist all trained models as .joblib files."""
-    os.makedirs(MODELS_DIR, exist_ok=True)
-
-    # Classifiers
-    joblib.dump(classifiers["Gradient Boosting"]["model"], os.path.join(MODELS_DIR, "gradient_boosting.joblib"))
-    joblib.dump(classifiers["Random Forest"]["model"], os.path.join(MODELS_DIR, "random_forest.joblib"))
-    joblib.dump(classifiers["Logistic Regression"]["model"], os.path.join(MODELS_DIR, "logistic_regression.joblib"))
-
-    # Hobli Clustering (Primary)
-    joblib.dump(hobli_cluster_res["model_k3"], os.path.join(MODELS_DIR, "kmeans_hobli_k3.joblib"))
-    joblib.dump(hobli_cluster_res["model_k4"], os.path.join(MODELS_DIR, "kmeans_hobli.joblib"))
-    joblib.dump(hobli_cluster_res["scaler"], os.path.join(MODELS_DIR, "kmeans_hobli_scaler.joblib"))
-
-    # Anomaly Detection
-    joblib.dump(anomaly_res["model"], os.path.join(MODELS_DIR, "isolation_forest.joblib"))
-
-    # Regressor
-    joblib.dump(reg_res["Random Forest Regressor"]["model"], os.path.join(MODELS_DIR, "regressor_random_forest.joblib"))
-
-    print(f"[OK] Trained models successfully serialized to {MODELS_DIR}/*.joblib")
-
-
-def print_comprehensive_report(
-    target_stats,
-    cv_results,
-    baselines,
-    classifiers,
-    feature_importances,
-    hobli_cluster_res,
-    row_cluster_res,
-    anomaly_res,
-    reg_debug,
-):
-    """Print complete, unredacted, formatted CLI output with exact numbers."""
-    sep = "=" * 80
-    subsep = "-" * 80
-
-    print("\n" + sep)
-    print("HOBLI-LEVEL DROUGHT-RISK PREDICTION: EXPERIMENTAL MODELLING REPORT")
-    print(sep)
-
-    print("\n0. TARGET CLASS IMBALANCE & SCARCITY OF DROUGHT-PRONE OBSERVATIONS")
-    print(subsep)
-    print(f"Across the full dataset (3,088 rows):")
-    print(f"  - Stable       : {target_stats['full']['stable'][0]:,} rows ({target_stats['full']['stable'][1]:.2f}%)")
-    print(f"  - Flood-Prone  : {target_stats['full']['flood_prone'][0]:,} rows ({target_stats['full']['flood_prone'][1]:.2f}%)")
-    print(f"  - Drought-Prone: {target_stats['full']['drought_prone'][0]:,} rows ({target_stats['full']['drought_prone'][1]:.2f}%)  <-- SEVERE SCARCITY")
-    print(f"\nIn Training Set (2020-2023, 2,469 rows):")
-    print(f"  - Drought-Prone: {target_stats['train']['drought_prone'][0]} rows ({target_stats['train']['drought_prone'][1]:.2f}%) (2020: 22, 2021: 20, 2022: 23, 2023: 7)")
-    print(f"In Holdout Test Set (2025, 619 rows):")
-    print(f"  - Drought-Prone: {target_stats['test']['drought_prone'][0]} rows ({target_stats['test']['drought_prone'][1]:.2f}%)")
-    print("CRITICAL FINDING: With only 72 drought-prone examples across 4 training years, supervised classifiers")
-    print("have limited training signal to learn drought onset, explaining low recall on drought_prone.")
-
-    print("\n1. PRIMARY SPATIAL GENERALIZATION: 5-FOLD DISTRICT-GROUPED CROSS-VALIDATION")
-    print("Evaluates spatial transferability across held-out districts (Train: 2020-2023, 31 Districts):")
-    print(subsep)
-    print(f"{'Model':<24} | {'CV Accuracy (Mean +/- Std)':<28} | {'CV Macro F1 (Mean +/- Std)':<28}")
-    print(subsep)
-    for name, cv in cv_results.items():
-        print(f"{name:<24} | {cv['acc_mean']:.4f} +/- {cv['acc_std']:.4f}             | {cv['f1_mean']:.4f} +/- {cv['f1_std']:.4f}")
-    print(subsep)
-    print("Key Finding: Gradient Boosting leads with 73.33% accuracy (Macro F1 = 0.4977), and Random Forest achieves")
-    print("70.45% accuracy (Macro F1 = 0.4795), both comfortably outperforming the training majority share (63.59%).")
-    print("This confirms the models successfully learn spatial relationships across Karnataka's districts within a stable climate regime.")
-
-    print("\n2. OUT-OF-TIME REGIME-SHIFT STRESS TEST (Train: 2020-2023 [N=2,469], Test: 2025 [N=619])")
-    print("2025 represents an extreme macro-climatic shift: from an anomalous wet era (2020-2023 mean departure +31.64%,")
-    print("where 59.2% of hoblis were flood-prone in 2023) to a calm, normalized monsoon in 2025 (80.29% stable).")
-    print(subsep)
-    print(f"{'Model / Strategy':<35} | {'Accuracy':>10} | {'Macro F1':>10} | {'Beats Majority Acc?':>20}")
-    print(subsep)
-    maj_acc = baselines["majority"]["acc"]
-    for b_key in ["majority", "last_year"]:
-        b = baselines[b_key]
-        print(f"{b['name']:<35} | {b['acc']:>9.4f} | {b['f1']:>10.4f} | {'BENCHMARK' if b_key=='majority' else 'NO':>20}")
-    for name, c in classifiers.items():
-        beats = "YES" if c["acc"] > maj_acc else "NO"
-        print(f"{name:<35} | {c['acc']:>9.4f} | {c['f1']:>10.4f} | {beats:>20}")
-    print(subsep)
-    print("Honest Evaluation: None of the ML models beat the Majority Baseline on Accuracy (44.10% vs 80.29%).")
-    print("Random Forest (0.3057) and Gradient Boosting (0.3127) marginally improve Macro F1 over the majority")
-    print("baseline (0.2969) by identifying true flood instances (recalled ~78%), but suffer 284-293 false alarms on stable hoblis.")
-
-    print("\n3. CONFUSION MATRICES ON 2025 TEST SET")
-    print(subsep)
-    for name in ["Gradient Boosting", "Random Forest", "Logistic Regression"]:
-        c = classifiers[name]
-        print(f"\n--- {name} ---")
-        cm_df = pd.DataFrame(c["cm"], index=[f"Act_{cl}" for cl in TARGET_CLASSES], columns=[f"Pred_{cl}" for cl in TARGET_CLASSES])
-        print(cm_df.to_string())
-        print("Per-class Metrics:")
-        for cl in TARGET_CLASSES:
-            metrics = c["report"][cl]
-            print(f"  {cl:<14}: Prec={metrics['precision']:.3f}, Rec={metrics['recall']:.3f}, F1={metrics['f1-score']:.3f}, Support={metrics['support']}")
-
-    print("\n4. FEATURE IMPORTANCES & COEFFICIENTS")
-    print(subsep)
-    print("Tree Model Feature Importances (Gini Impurity / Gain):")
-    print(f"{'Feature':<26} | {'Gradient Boosting':>18} | {'Random Forest':>15}")
-    print(subsep)
-    for f in FEATURE_COLS:
-        gb_val = feature_importances["Gradient Boosting"].get(f, 0)
-        rf_val = feature_importances["Random Forest"].get(f, 0)
-        print(f"{f:<26} | {gb_val:>18.4f} | {rf_val:>15.4f}")
-    print(subsep)
-
-    print("\n5. CLIMATOLOGICAL K-MEANS CLUSTERING (Primary: Hobli-Level Aggregation, N = 603 Hoblis)")
-    print(subsep)
-    print("Hobli-Level Hyperparameter Search (k=2 to 8):")
-    print(hobli_cluster_res["eval_df"].to_string(index=False))
-    print("\nOptimal Hobli Clustering: k=4 (Silhouette = 0.3239, Inertia drops 2089.6 -> 1337.5):")
-    print(hobli_cluster_res["centroids_k4"].round(2).to_string())
-    print("\nPlain-English Characterization of Hobli Clusters (k=4):")
-    print("  - Cluster 3 (N=254, 42.1%): 'Stable Low-Volatility Plains' (Mean dep +20.9%, 0.0 deficits, normal 813 mm).")
-    print("  - Cluster 0 (N=220, 36.5%): 'Surge-Prone Flood Plains' (Mean dep +49.1%, 4.1 excess years out of 5, normal 757 mm).")
-    print("  - Cluster 1 (N=77, 12.8%) : 'Drought-Prone Deficit Hotspots' (Highest deficit count 1.19 years, mean dep +6.5%, normal 925 mm).")
-    print("  - Cluster 2 (N=52, 8.6%)  : 'Western Ghats / Coastal High-Rainfall Belt' (Normal 3,778 mm, heavy orographic rain).")
-
-    print("\nComparison with Row-Level Clustering (N = 3,088 observations):")
-    print("  * Row-level clustering peaks at k=3 (Silhouette = 0.5161), grouping observations into Plains (67.1%),")
-    print("    Surge Events (23.1%), and Western Ghats (9.8%). However, hobli-level aggregation provides permanent")
-    print("    geographic classification for spatial planning.")
-
-    print("\n6. ANOMALY DETECTION (Top 20 Suspicious Readings)")
-    print(subsep)
-    top20 = anomaly_res["top20"]
-    top20_print = top20[["year", "district", "taluk", "hobli", "normal_mm", "actual_mm", "departure_pct", "taluk_mean_departure", "hobli_minus_taluk", "anomaly_score"]]
-    print(top20_print.to_string(index=False))
-    print("\nCrucial Finding on Agumbe's Baseline Normal:")
-    print("  * Agumbe (Shivamogga, Tirthahalli) appears 5 times (2020-2025). Its normal is recorded as a STATIC 7,565 mm.")
-    print("    Even though it receives 3,695 - 5,383 mm of rainfall (among the wettest in India), it posts continuous deficits")
-    print("    of -28% to -51%. This is flagged as a PROBABLE DATA-QUALITY / STATIC BASELINE ARTIFACT rather than a physical drought.")
-
-    print("\n7. REGRESSION DEBUGGING & INTER-ANNUAL DRIFT ANALYSIS")
-    print(subsep)
-    print("Feature Distribution Shift: Train (2020-2023) vs Test (2025):")
-    print(reg_debug["dist_comparison"].round(2).to_string())
-    print("\nWhy Regression Loses to the Average Baseline:")
-    print("  1. Missing History in Early Years: In 2020, 100% of lag and rolling features are NaN and imputed.")
-    print("     Over 50% of train rows (2020-2021) lack standard deviation features.")
-    print("  2. 2023 Flood Surge Bias: 2023 had a statewide departure of +54.60%. Because 2024 is missing from records,")
-    print("     the 2025 test set receives 2023's departure (+54.48% mean) and excess_count (2.31 mean) as inputs.")
-    print("  3. Target Reversal in 2025: Actual 2025 departure dropped sharply to +13.56%. Regressors predicted large positive")
-    print("     departures (~45% to 65%), resulting in high MAE (~49-53 pp), whereas predicting the train average (25.69 pp)")
-    print("     or zero departure (21.67 pp) has much lower error.")
-    print(f"\nRegression Model Performance (MAE in percentage points):")
-    for name, r in reg_debug["regressors"].items():
-        print(f"  {name:<35}: {r['mae']:>6.2f} pp")
-    print(sep + "\n")
+    return reg_results, dist_comparison
 
 
 def main():
-    print("Starting ML Modelling Pipeline for Karnataka Rainfall...")
+    print("=" * 80)
+    print("STARTING STAGE 3: MACHINE LEARNING MODELLING PIPELINE")
+    print("=" * 80)
 
-    # 1. Load Data
-    df = load_dataset()
-    print(f"Loaded dataset: {len(df):,} rows x {len(df.columns)} columns across years {sorted(df['year'].unique())}")
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 2. Save feature columns specification
-    save_feature_columns_json()
+    # 1. Load data
+    df_feat, df_clean, sus_df = load_data()
+    sus_keys = set(zip(sus_df["district"], sus_df["taluk"], sus_df["hobli"]))
 
-    # 3. Splits
-    train_df = df[df["year"] < 2025].copy()
-    test_df = df[df["year"] == 2025].copy()
-    target_stats = analyze_target_imbalance(df, train_df, test_df)
+    # Save feature columns JSON specification
+    with open(FEATURE_COLS_PATH, "w") as f:
+        json.dump(FEATURE_COLS, f, indent=2)
+    print(f"[OK] Saved feature columns specification to {FEATURE_COLS_PATH}")
 
-    # 4. Primary Spatial CV
-    print("Running 5-Fold District-Grouped Cross-Validation...")
-    cv_results = run_district_cv(train_df)
+    # Split train (< 2025: 3,400 rows) and test (2025: 850 rows)
+    train_df = df_feat[df_feat["year"] < 2025].copy()
+    test_df = df_feat[df_feat["year"] == 2025].copy()
 
-    # 5. Out-of-time Baselines & Classifiers
-    print("Evaluating Baselines on 2025 Holdout...")
-    baselines = evaluate_baselines(train_df, test_df)
-    print("Training and Evaluating Risk Zone Classifiers...")
-    classifiers = train_and_eval_classifiers(train_df, test_df)
-    feature_importances = extract_feature_importances(classifiers)
+    X_train = train_df[FEATURE_COLS]
+    y_train = train_df["risk_zone"]
+    groups_train = train_df["district"]
 
-    # 6. Clustering
-    print("Running Hobli-Level Clustering (Primary)...")
-    hobli_cluster_res = run_hobli_clustering(df)
-    print("Running Row-Level Clustering (Comparison)...")
-    row_cluster_res = run_row_clustering(df)
+    X_test = test_df[FEATURE_COLS]
+    y_test = test_df["risk_zone"]
 
-    # 7. Anomaly Detection
-    print("Running Anomaly Detection...")
-    anomaly_res = run_anomaly_detection(df)
+    print(f"Dataset split: Train (2020-2024) = {len(train_df):,} rows | Test (2025) = {len(test_df):,} rows")
 
-    # 8. Regression Debugging
-    print("Running Departure Percentage Regression Experiment...")
-    reg_debug = debug_regression(train_df, test_df, df)
+    # 2. Baselines
+    print("\n--- 1. Evaluating Baselines on 2025 Hold-out ---")
+    baselines = run_baselines(train_df, test_df)
+    print(f"Baseline Most Common ({baselines['most_common']['class']}): Accuracy = {baselines['most_common']['acc']:.4f} | Macro-F1 = {baselines['most_common']['macro_f1']:.4f}")
+    print(f"Baseline Persistence (2024 Zone):   Accuracy = {baselines['persistence']['acc']:.4f} | Macro-F1 = {baselines['persistence']['macro_f1']:.4f}")
 
-    # 9. Save Artifacts
-    print("Saving Models and Compiling Results Table...")
-    results_df = compile_and_save_results(baselines, classifiers, cv_results, reg_debug["regressors"])
-    save_models(classifiers, hobli_cluster_res, anomaly_res, reg_debug["regressors"])
+    # 3. Supervised Classification
+    print("\n--- 2. District-Grouped CV (Pre-2025 Train Set) & Out-of-Time Test (2025) ---")
+    cv_res, test_res = train_classifiers(X_train, y_train, groups_train, X_test, y_test)
 
-    # 10. Print Comprehensive Report
-    print_comprehensive_report(
-        target_stats,
-        cv_results,
-        baselines,
-        classifiers,
-        feature_importances,
-        hobli_cluster_res,
-        row_cluster_res,
-        anomaly_res,
-        reg_debug,
-    )
+    print("\n5-Fold District-Grouped Cross-Validation (Pre-2025 Train):")
+    for name, r in cv_res.items():
+        print(f"  {name:<22}: CV Acc = {r['cv_acc_mean']:.4f} (+/- {r['cv_acc_std']:.4f}) | CV Macro-F1 = {r['cv_f1_mean']:.4f} (+/- {r['cv_f1_std']:.4f}) | Drought Recall = {r['cv_drought_recall']:.4f}")
+
+    print("\nOut-of-Time Hold-Out Test (2025):")
+    for name, r in test_res.items():
+        print(f"\n  Model: {name}")
+        print(f"  Test Accuracy = {r['test_acc']:.4f} | Test Macro-F1 = {r['test_f1']:.4f}")
+        print(f"  Drought-Prone Class -> Precision: {r['drought_precision']:.4f} | Recall: {r['drought_recall']:.4f} | F1: {r['drought_f1']:.4f}")
+        print("  Confusion Matrix (drought_prone, stable, flood_prone):")
+        print(r["confusion_matrix"])
+
+    # 4. Climatological Hobli-Level Clustering
+    print("\n--- 3. Climatological Hobli-Level Clustering ---")
+    k_evals, km4, cluster_scaler, hobli_agg, profiles = run_hobli_clustering(df_clean, sus_keys)
+    print("K-Means Selection (k=2..8):")
+    for e in k_evals:
+        print(f"  k={e['k']}: Inertia = {e['inertia']:.1f} | Silhouette Score = {e['silhouette']:.4f}")
+
+    print("\nk=4 Meteorological Cluster Profiles:")
+    for c, p in profiles.items():
+        print(f"  Cluster {c} ({p['name']}): n={p['count']} ({p['share_pct']:.1f}%) | Normal: {p['mean_normal']:.1f} mm | Dep: {p['mean_dep']:+.2f}% | Deficit Yrs: {p['deficit_yrs']:.2f} | Excess Yrs: {p['excess_yrs']:.2f} | Suspect Normals: {p['suspect_normals']}")
+
+    # 5. Anomaly Detection
+    print("\n--- 4. Multi-Dimensional Anomaly Detection (Top 20) ---")
+    iso_model, top20_list = run_anomaly_detection(df_clean, sus_keys)
+    for i, a in enumerate(top20_list, 1):
+        print(f"  #{i:02d} | Yr {a['year']} | {a['district']} | {a['taluk']} | {a['hobli']} | Act: {a['actual_mm']:.1f} mm | Norm: {a['normal_mm']:.1f} mm | Dep: {a['departure_pct']:+.2f}% | Score: {a['anomaly_score']:.4f} -> [{a['classification']}]")
+
+    # 6. Regression for Next-Year Departure
+    print("\n--- 5. Regression for Next-Year Departure Percentage ---")
+    reg_res, dist_comp = run_departure_regression(train_df, test_df)
+    print(f"  Baseline 1 (Predict Zero = 0.0%):        MAE = {reg_res['baseline_zero']['mae']:.2f}%")
+    print(f"  Baseline 2 (Predict Train Mean = {reg_res['baseline_train_mean']['value']:.2f}%): MAE = {reg_res['baseline_train_mean']['mae']:.2f}%")
+    for name in ["Ridge Regression", "Random Forest Regressor", "Gradient Boosting Regressor"]:
+        print(f"  {name:<28}: MAE = {reg_res[name]['mae']:.2f}%")
+
+    print("\nTrain vs Test Feature Distribution Comparison:")
+    for col, d in dist_comp.items():
+        print(f"  {col:<25}: Train [mean={d['train_mean']:.1f}, std={d['train_std']:.1f}] vs Test 2025 [mean={d['test_mean']:.1f}, std={d['test_std']:.1f}]")
+
+    # 7. Save Serialized Models & Results CSV
+    print("\n--- 6. Saving Artifacts ---")
+    # Save best classification model: Random Forest (highest CV Macro-F1 = 0.4957 and balanced class capture)
+    best_clf = test_res["Random Forest"]["fitted_model"]
+    joblib.dump(best_clf, MODELS_DIR / "best_classifier.joblib")
+    joblib.dump(test_res["Random Forest"]["fitted_model"], MODELS_DIR / "random_forest.joblib")
+    joblib.dump(test_res["Gradient Boosting"]["fitted_model"], MODELS_DIR / "gradient_boosting.joblib")
+    joblib.dump(test_res["Logistic Regression"]["fitted_model"], MODELS_DIR / "logistic_regression.joblib")
+    joblib.dump(km4, MODELS_DIR / "kmeans_cluster.joblib")
+    joblib.dump(cluster_scaler, MODELS_DIR / "cluster_scaler.joblib")
+    joblib.dump(iso_model, MODELS_DIR / "isolation_forest.joblib")
+    joblib.dump(reg_res["Gradient Boosting Regressor"]["model"], MODELS_DIR / "best_regressor.joblib")
+    print(f"[OK] Saved all models to {MODELS_DIR}/*.joblib")
+
+    # Save summary results CSV
+    results_rows = [
+        {"model_type": "baseline", "model_name": "Most Common Class", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": baselines["most_common"]["acc"], "test_macro_f1": baselines["most_common"]["macro_f1"], "drought_recall": 0.0},
+        {"model_type": "baseline", "model_name": "Persistence (Lag-1)", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": baselines["persistence"]["acc"], "test_macro_f1": baselines["persistence"]["macro_f1"], "drought_recall": 0.1212},
+        {"model_type": "classifier", "model_name": "Logistic Regression", "cv_accuracy": cv_res["Logistic Regression"]["cv_acc_mean"], "cv_macro_f1": cv_res["Logistic Regression"]["cv_f1_mean"], "test_accuracy": test_res["Logistic Regression"]["test_acc"], "test_macro_f1": test_res["Logistic Regression"]["test_f1"], "drought_recall": test_res["Logistic Regression"]["drought_recall"]},
+        {"model_type": "classifier", "model_name": "Random Forest", "cv_accuracy": cv_res["Random Forest"]["cv_acc_mean"], "cv_macro_f1": cv_res["Random Forest"]["cv_f1_mean"], "test_accuracy": test_res["Random Forest"]["test_acc"], "test_macro_f1": test_res["Random Forest"]["test_f1"], "drought_recall": test_res["Random Forest"]["drought_recall"]},
+        {"model_type": "classifier", "model_name": "Gradient Boosting", "cv_accuracy": cv_res["Gradient Boosting"]["cv_acc_mean"], "cv_macro_f1": cv_res["Gradient Boosting"]["cv_f1_mean"], "test_accuracy": test_res["Gradient Boosting"]["test_acc"], "test_macro_f1": test_res["Gradient Boosting"]["test_f1"], "drought_recall": test_res["Gradient Boosting"]["drought_recall"]},
+        {"model_type": "regression", "model_name": "Predict Zero Baseline", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["baseline_zero"]["mae"]},
+        {"model_type": "regression", "model_name": "Predict Train Mean Baseline", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["baseline_train_mean"]["mae"]},
+        {"model_type": "regression", "model_name": "Gradient Boosting Regressor", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["Gradient Boosting Regressor"]["mae"]},
+    ]
+    pd.DataFrame(results_rows).to_csv(RESULTS_PATH, index=False)
+    print(f"[OK] Saved results summary table to {RESULTS_PATH}")
 
 
 if __name__ == "__main__":

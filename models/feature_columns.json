@@ -1,9 +1,15 @@
 [
   "normal_mm",
+  "gap_years",
+  "n_prior_years",
   "deficit_count",
   "excess_count",
   "mean_actual_mm",
   "std_actual_mm",
+  "mean_departure_pct",
   "std_departure_pct",
-  "previous_year_departure"
+  "previous_year_departure",
+  "taluk_mean_departure",
+  "district_mean_departure",
+  "hobli_minus_taluk"
 ]
