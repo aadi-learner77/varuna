@@ -26,9 +26,9 @@ Steps
 import re
 import os
 from pathlib import Path
+from collections import defaultdict, Counter
 
 import pandas as pd
-import numpy as np
 from rapidfuzz import process, fuzz
 
 RAW_DIR = Path("data/raw")
@@ -274,49 +274,59 @@ def infer_geo_2025(df_25):
     return districts, taluks
 
 
-geo_rows = []
+combined_geo = combined.copy()
+combined_geo["district"] = ""
+combined_geo["taluk"] = ""
 
-for year, grp in combined.groupby("year", sort=False):
-    if year == 2025:
-        districts_25, taluks_25 = infer_geo_2025(grp.reset_index(drop=True))
-        for i, (_, row) in enumerate(grp.reset_index(drop=True).iterrows()):
-            geo_rows.append(dict(row.to_dict(), district=districts_25[i], taluk=taluks_25[i]))
-    else:
-        districts, taluks = fill_geo_from_level(grp)
-        for i, (_, row) in enumerate(grp.iterrows()):
-            geo_rows.append(dict(row.to_dict(), district=districts[i], taluk=taluks[i]))
-
-combined_geo = pd.DataFrame(geo_rows)
 print(f"  Geo filled for all years: {len(combined_geo)} rows")
 
+for year, grp in combined.groupby("year", sort=False):
+    idx = grp.index
+    if year == 2025:
+        d, t = infer_geo_2025(grp.reset_index(drop=True))
+    else:
+        d, t = fill_geo_from_level(grp)
+    combined_geo.loc[idx, "district"] = d
+    combined_geo.loc[idx, "taluk"] = t
 
-# ── Cross-check 2025 inference ───────────────────────────────────────────────
-# For hobli names appearing in both 2025 and 2020-2023, check if the inferred
-# district/taluk matches the majority vote from other years.
 
-# Build a per-hobli (district, taluk) vote from 2020-2023
-from collections import defaultdict, Counter
+# ── Cross-check 2025 inference vs majority vote from 2020-2023 ──────────────
 
-hobli_votes = defaultdict(Counter)  # hobli_lower → Counter((district, taluk))
-for year in (2020, 2021, 2022, 2023):
-    df_year = combined_geo[combined_geo["year"] == year]
-    for _, row in df_year.iterrows():
-        key = str(row["name_raw"]).strip().lower()
-        geo = (str(row["district"]).strip(), str(row["taluk"]).strip())
-        hobli_votes[key][geo] += 1
+hobli_votes = defaultdict(Counter)
+for _, row in combined_geo[combined_geo["year"].isin((2020, 2021, 2022, 2023))].iterrows():
+    key = str(row["name_raw"]).strip().lower()
+    hobli_votes[key][(str(row["district"]).strip(), str(row["taluk"]).strip())] += 1
 
 mismatch_report = []
+seen_issues = set()  # (hobli_base, majority_district, majority_taluk) to dedupe
 for _, row in combined_geo[combined_geo["year"] == 2025].iterrows():
     key = str(row["name_raw"]).strip().lower()
+    if key not in hobli_votes:
+        continue
+    votes = hobli_votes[key]
+    majority_geo, majority_count = votes.most_common(1)[0]
+    if majority_count < 2:
+        continue
     d25 = str(row["district"]).strip()
     t25 = str(row["taluk"]).strip()
-    if key in hobli_votes:
-        # Majority vote from other years
-        votes = hobli_votes[key]
-        majority_geo, majority_count = votes.most_common(1)[0]
-        total = sum(votes.values())
-        if majority_count >= 2 and (d25, t25) != majority_geo:
-            mismatch_report.append((key, d25, t25, majority_geo[0], majority_geo[1], majority_count, total))
+    if (d25, t25) == majority_geo:
+        continue
+    # Skip false positives where the only difference is UNKNOWN vs empty taluk
+    # (hobli rows correctly placed under their district, no taluk in any year).
+    if t25 == "UNKNOWN" and majority_geo[1] == "":
+        continue
+    # Skip same-name district/taluk rows: when 2025 district == majority district
+    # and the taluk name equals the district name, this is just the district header
+    # row being treated as a taluk of itself, not a real disagreement.
+    if d25.lower() == majority_geo[0].lower() and t25.lower() == d25.lower():
+        continue
+    # Keep one representative per (2025_taluk, majority_taluk) pair so we don't
+    # list every hobli under a taluk whose name was spelled differently in 2025.
+    issue_key = (t25.lower(), majority_geo[1].lower())
+    if issue_key in seen_issues:
+        continue
+    seen_issues.add(issue_key)
+    mismatch_report.append((key, d25, t25, majority_geo[0], majority_geo[1], majority_count, sum(votes.values())))
 
 print(f"\n  2025 inference cross-check: {len(mismatch_report)} mismatches vs majority vote from 2020-2023")
 
@@ -363,11 +373,10 @@ print("\n" + "=" * 78)
 print("STEP 5 – Recompute departure_pct; flag rows differing > 2 pp")
 print("=" * 78)
 
-combined_geo["departure_recomputed"] = np.where(
-    combined_geo["normal_mm"].ne(0),
-    (combined_geo["actual_mm"] - combined_geo["normal_mm"]) / combined_geo["normal_mm"] * 100,
-    np.nan,
+combined_geo["departure_recomputed"] = (
+    (combined_geo["actual_mm"] - combined_geo["normal_mm"]) / combined_geo["normal_mm"] * 100
 ).round(2)
+combined_geo.loc[combined_geo["normal_mm"] == 0, "departure_recomputed"] = pd.NA
 
 combined_geo["departure_file"] = pd.to_numeric(combined_geo["departure_pct"], errors="coerce")
 diff_mask = (combined_geo["departure_recomputed"] - combined_geo["departure_file"]).abs() > 2
@@ -471,7 +480,7 @@ for year in sorted(raw_dfs.keys()):
     L.append(f"| Null cells | {info['nulls_in']} | 0 (after coercion) |")
     L.append(f"| Duplicate rows dropped | {info['dup_in']} | — |")
     L.append(f"| Blank rows dropped | {info['blank_in']} | — |")
-    L.append(f"| Summary/region rows dropped | {n_summary if year == min(raw_dfs) else 0} | — |")
+    L.append(f"| Summary/region rows dropped | — | — |")
     L.append(f"| Districts (unique) | — | {yc['district'].nunique()} |")
     L.append(f"| Taluks (unique) | — | {yc['taluk'].nunique()} |")
     L.append(f"| Hoblis (unique) | — | {yc['hobli'].nunique()} |")
@@ -503,7 +512,9 @@ if uncertain:
         L.append(f"... and {len(uncertain)-20} more")
     L.append("")
 
-L.append("## 2025 geographic inference\n")
+L.append("## Summary/region rows dropped\n")
+L.append(f"- **{n_summary}** rows dropped across all years (SIK, NIK, MALNAD, COASTAL, State).\n")
+L.append("\n## 2025 geographic inference\n")
 L.append("- The 2025 file has no D/T/H level column.  District & taluk were inferred by walking ")
 L.append("  the file in order: when a name matches a known district (from 2020-2023 D rows) it starts ")
 L.append("  a new district block; when a name matches a known taluk it starts a new taluk block; ")
