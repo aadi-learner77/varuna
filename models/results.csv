@@ -1,0 +1,14 @@
+task,model,evaluation_scheme,accuracy,macro_f1,mae_pp,cv_acc_std,cv_f1_std,beats_baseline
+classification,Gradient Boosting (District-Grouped 5-Fold),Spatial GroupKFold (Train: 2020-2023),0.7333,0.4977,,0.0233,0.0604,True
+classification,Random Forest (District-Grouped 5-Fold),Spatial GroupKFold (Train: 2020-2023),0.7045,0.4795,,0.0342,0.0612,True
+classification,Logistic Regression (District-Grouped 5-Fold),Spatial GroupKFold (Train: 2020-2023),0.6776,0.4089,,0.0578,0.026,True
+classification,Baseline: Most Common Class ('stable'),Time-Aware Holdout (Test: 2025),0.8029,0.2969,,,,False
+classification,Baseline: Last Year's Class (Persistence),Time-Aware Holdout (Test: 2025),0.3813,0.2628,,,,False
+classification,Gradient Boosting,Time-Aware Holdout (Test: 2025),0.4297,0.3127,,,,True
+classification,Random Forest,Time-Aware Holdout (Test: 2025),0.441,0.3057,,,,True
+classification,Logistic Regression,Time-Aware Holdout (Test: 2025),0.3376,0.2361,,,,False
+regression,Predict Zero Departure Baseline,Time-Aware Holdout (Test: 2025),,,21.67,,,True
+regression,Predict Train Average Baseline,Time-Aware Holdout (Test: 2025),,,25.69,,,False
+regression,Ridge Regressor,Time-Aware Holdout (Test: 2025),,,48.79,,,False
+regression,Gradient Boosting Regressor,Time-Aware Holdout (Test: 2025),,,50.51,,,False
+regression,Random Forest Regressor,Time-Aware Holdout (Test: 2025),,,53.05,,,False

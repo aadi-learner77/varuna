@@ -1,0 +1,9 @@
+[
+  "normal_mm",
+  "deficit_count",
+  "excess_count",
+  "mean_actual_mm",
+  "std_actual_mm",
+  "std_departure_pct",
+  "previous_year_departure"
+]
