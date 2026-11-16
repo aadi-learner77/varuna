@@ -100,12 +100,11 @@
   a new district block; when a name matches a known taluk it starts a new taluk block; 
   otherwise the row inherits the current district/taluk.
 
-- **87** hobli rows where the 2025 inference differs from the majority 
+- **86** hobli rows where the 2025 inference differs from the majority 
   vote across 2020-2023 (only shown when ≥ 2 other years agree):
 
 | Hobli | 2025 district | 2025 taluk | Majority district | Majority taluk | Votes |
 |-------|---------------|------------|------------------|----------------|-------|
-| bengaluru urban | BENGALURU URBAN | UNKNOWN | BENGALURU URBAN |  | 4/4 |
 | channarayapatna | BENGALURU RURAL | Channarayapatna | HASSAN | Channarayapatna | 8/12 |
 | kundana | BENGALURU RURAL | Channarayapatna | BENGALURU RURAL | Devanahalli | 4/4 |
 | dodda belavangala | BENGALURU RURAL | Dodballapur | BENGALURU RURAL | DODDABALLAPURA | 3/4 |
@@ -130,7 +129,8 @@
 | alawandi | KOPPALA | Koppal | KOPPALA | KOPPALA | 3/4 |
 | gurgunta | RAICHUR | Lingasuguru | RAICHUR | Lingsugur | 4/4 |
 | gunjihalli | RAICHUR | Maski | RAICHUR | Sindhanur | 4/8 |
-... and 62 more
+| gundgurti | KALABURAGI | Chittapur | KALABURAGI | Kalagi | 4/8 |
+... and 61 more
 
 ## Yearly counts
 
