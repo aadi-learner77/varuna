@@ -1,0 +1,339 @@
+district,taluk,hobli,normal_mm,direction,n_years,mean_actual_mm,min_departure_pct,max_departure_pct,mean_departure_pct,notes
+BAGALKOTE,Badami,Kulgeri,582.8,always_excess,5,776.7,4.97,87.14,33.27,Unchanged baseline normal with persistent one-sided departure
+BAGALKOTE,Guledagudda,Guledagudda,606.9,always_excess,5,744.9,6.59,39.37,22.74,Unchanged baseline normal with persistent one-sided departure
+BAGALKOTE,Hungund,Amingarh,632.8,always_excess,5,778.6,6.95,37.03,23.04,Unchanged baseline normal with persistent one-sided departure
+BAGALKOTE,Hungund,Karadi,652.1,always_excess,5,743.4,1.78,29.6,14.01,Unchanged baseline normal with persistent one-sided departure
+BAGALKOTE,Mudhol,Lokapur,472.8,always_excess,5,680.3,13.11,77.59,43.88,Unchanged baseline normal with persistent one-sided departure
+BALLARI,Kurugodu,Kurugodu,499.1,always_excess,5,665.6,16.63,66.53,33.37,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Athani,Anantapur,517.0,always_excess,5,695.2,10.06,58.61,34.48,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Bailhongal,Bailhongal,816.0,always_excess,5,935.1,1.23,25.37,14.59,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Bailhongal,Nesargi,770.9,always_excess,5,984.4,10.93,40.94,27.7,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Belagavi,Uchagaon,1341.0,always_excess,5,1814.5,15.81,71.7,35.31,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Chikkodi,Chikkodi,666.0,always_excess,5,894.6,16.95,60.81,34.33,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Chikkodi,Nagaramonnali,634.0,always_excess,5,824.3,13.29,52.52,30.01,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Chikkodi,Sadalgi,663.2,always_excess,5,825.2,1.13,45.25,24.44,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Gokak,Arbhavi,560.2,always_excess,5,682.6,1.57,53.21,21.86,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Gokak,Gokak,524.0,always_excess,5,757.5,29.73,70.8,44.55,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Gokak,Kowjalgi,537.0,always_excess,5,715.9,5.77,75.42,33.32,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Hukkeri,Hukkeri,648.8,always_excess,5,821.7,11.64,49.0,26.64,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Hukkeri,Sankeswar,812.0,always_excess,5,1049.2,11.08,45.79,29.2,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Hukkeri,Yamkanmardi,685.1,always_excess,5,948.6,22.78,57.84,38.46,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Kagavada,Kagwad,540.9,always_excess,5,736.8,4.62,63.16,36.22,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Khanapur,Gunji,2263.1,always_excess,5,2705.1,5.79,48.96,19.53,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Khanapur,Jamboti,1856.0,always_excess,5,3159.1,32.33,106.11,70.2,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Kitthuru,Kittur,1035.8,always_excess,5,1206.0,4.86,32.8,16.43,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Mudagali,Arbhavi,533.8,always_excess,5,703.4,7.48,75.47,31.77,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Mudagali,Kowjalgi,528.8,always_excess,5,699.4,5.86,76.37,32.26,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Nippani,Nippani,838.0,always_excess,5,1167.4,22.32,60.86,39.3,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Nippani,Sadalgi,766.9,always_excess,5,951.6,10.21,53.98,24.08,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Raibagh,Kudchi,529.0,always_excess,5,685.8,7.75,82.42,29.65,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Raibagh,Raibagh,483.0,always_excess,5,691.2,23.25,102.69,43.09,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Ramadurga,Bidki,534.0,always_excess,5,748.0,27.15,68.16,40.07,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Ramadurga,Katkol,535.8,always_excess,5,805.8,32.65,80.04,50.39,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Ramadurga,Mudkavi,542.8,always_excess,5,722.4,5.89,80.66,33.08,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Ramadurga,Ramdurg,540.2,always_excess,5,756.6,7.96,96.11,40.07,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Soundatti,Manoli,562.0,always_excess,5,778.3,15.48,71.35,38.48,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Soundatti,Muragoda,607.0,always_excess,5,857.8,16.47,55.85,41.31,Unchanged baseline normal with persistent one-sided departure
+BELAGAVI,Soundatti,Savadatti,568.0,always_excess,5,873.2,41.9,74.3,53.73,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Devanahalli,Devanahalli,808.2,always_excess,5,1083.8,9.82,73.02,34.11,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Devanahalli,Vijaypura,786.9,always_excess,5,1051.4,3.6,97.71,33.6,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Doddaballapura,Dodda Belavangala,791.9,always_excess,5,1121.1,3.23,110.86,41.57,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Doddaballapura,Madure,812.2,always_excess,5,1141.4,8.28,107.39,40.54,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Doddaballapura,Sasalu,709.2,always_excess,5,1107.0,17.49,116.78,56.09,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Doddaballapura,Tubagere,786.9,always_excess,5,1163.5,11.34,98.09,47.85,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Hosakote,Jadigenhalli,795.9,always_excess,5,1090.9,1.58,79.77,37.06,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Nelamangala,Sompura,794.1,always_excess,5,1112.6,20.05,78.46,40.11,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Nelamangala,Sompura_2,826.9,always_excess,5,1168.5,6.26,74.85,41.3,Unchanged baseline normal with persistent one-sided departure
+BENGALURU RURAL,Nelamangala,Tyamagondal_2,869.9,always_excess,5,1177.3,3.46,96.21,35.33,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Anekal,Anekal_2,881.0,always_excess,5,1069.2,6.43,67.2,21.37,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Anekal,Attibele_1,823.8,always_excess,5,975.0,6.67,47.45,18.35,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Anekal,Attibele_2,856.9,always_excess,5,1145.3,9.86,65.46,33.66,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Anekal,Jigani_1,844.9,always_excess,5,1129.1,6.58,71.01,33.63,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Anekal,Jigani_2,865.0,always_excess,5,1171.5,6.44,87.86,35.44,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Anekal,Sarjapura_3,813.8,always_excess,5,1017.3,11.05,50.49,25.01,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru East,Bidharahalli,798.9,always_excess,5,1187.4,24.1,101.75,48.63,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru North,Dasanapura_2,872.1,always_excess,5,1121.9,11.95,65.48,28.65,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru North,Dasanapura_3,899.9,always_excess,5,1107.9,9.84,58.67,23.11,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru North,Yashavantapura_2,865.9,always_excess,5,1191.5,8.56,58.08,37.6,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru South,Beguru_2,875.0,always_excess,5,1073.1,2.02,56.69,22.64,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru South,Kengeri_1,905.1,always_excess,5,1214.8,7.71,74.7,34.22,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru South,Kengeri_4,851.8,always_excess,5,1349.0,21.57,81.57,58.37,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru South,Tavarekere_1,734.1,always_excess,5,1157.0,22.91,116.08,57.61,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru South,Uttarahalli_4,904.9,always_excess,5,1317.1,19.07,77.68,45.56,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Bengaluru South,Uttarahalli_5,941.0,always_excess,5,1139.2,2.45,41.45,21.07,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Hesarughatta_1,746.0,always_excess,5,1140.5,29.02,98.53,52.88,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Hesarughatta_2,780.8,always_excess,5,1187.5,16.13,113.57,52.08,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Jala_1,760.0,always_excess,5,1105.6,14.96,108.29,45.47,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Jala_2,763.2,always_excess,5,1163.6,27.94,107.21,52.47,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Jala_3,781.2,always_excess,5,1138.7,21.64,103.07,45.77,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Yelahanka_1,751.8,always_excess,5,1207.5,29.69,105.85,60.61,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Yelahanka_2,785.1,always_excess,5,1058.9,1.24,62.93,34.88,Unchanged baseline normal with persistent one-sided departure
+BENGALURU URBAN,Yelahanka,Yelahanka_3,800.8,always_excess,5,1113.3,0.1,63.17,39.02,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Basavakalyan,Kohinoor,774.9,always_excess,5,1035.2,6.97,69.81,33.59,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Basavakalyan,Matala,786.9,always_excess,5,930.2,3.68,33.16,18.21,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Basavakalyan,Mudabi,778.9,always_excess,5,987.3,4.75,61.36,26.75,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Basavakalyan,Rajeshwar,813.1,always_excess,5,946.3,2.71,31.32,16.39,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Bhalki,Bhalki,873.9,always_excess,5,976.2,0.61,28.04,11.7,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Bhalki,Saigaon,769.1,always_excess,5,928.2,9.92,49.54,20.68,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Humnabad,Dubalgundi,822.1,always_excess,5,964.4,4.62,46.72,17.31,Unchanged baseline normal with persistent one-sided departure
+BIDAR,Humnabad,Humnabad,834.0,always_excess,5,988.7,0.24,33.31,18.55,Unchanged baseline normal with persistent one-sided departure
+CHIKKABALLAPURA,Bagepalli,Bagepalli,695.1,always_excess,5,972.4,18.94,62.88,39.9,Unchanged baseline normal with persistent one-sided departure
+CHIKKABALLAPURA,Bagepalli,Guluru,696.1,always_excess,5,839.3,6.29,42.39,20.57,Unchanged baseline normal with persistent one-sided departure
+CHIKKABALLAPURA,Bagepalli,Mittemari,715.1,always_excess,5,996.9,9.9,65.59,39.41,Unchanged baseline normal with persistent one-sided departure
+CHIKKABALLAPURA,Gauribidanur,Manchenahalli,786.1,always_excess,5,1070.5,1.42,75.95,36.19,Unchanged baseline normal with persistent one-sided departure
+CHIKKABALLAPURA,Gauribidanur,Tondebavi,758.2,always_excess,5,1186.9,22.35,105.67,56.55,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Ajjampura,Ajjampura,668.8,always_excess,5,949.8,9.42,73.84,42.0,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Ajjampura,Amrutpura,698.1,always_excess,5,1000.9,1.12,88.4,43.38,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Ajjampura,Shivani,575.2,always_excess,5,947.5,23.44,98.78,64.74,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Chikkamagaluru,Aldur,1643.0,always_excess,5,2090.7,10.23,55.08,27.25,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Chikkamagaluru,Amble,937.9,always_excess,5,1201.7,6.71,59.17,28.12,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Chikkamagaluru,Avathi,1340.1,always_excess,5,2178.5,29.4,101.42,62.55,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Chikkamagaluru,Chikkamagaluru,835.9,always_excess,5,1409.3,39.11,90.19,68.59,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Chikkamagaluru,Jagar,909.1,always_excess,5,2029.7,91.31,153.8,123.26,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Chikkamagaluru,Vasthare,1048.1,always_excess,5,1956.8,50.19,127.86,86.71,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Kadur,Kadur,639.0,always_excess,5,893.2,4.91,82.0,39.79,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Kadur,Panchanahalli,593.9,always_excess,5,928.5,20.68,89.9,56.33,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Kadur,Shingatagere,630.0,always_excess,5,943.9,31.43,64.76,49.83,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Mudigere,Baluru,3866.0,always_deficit,5,3126.7,-22.58,-13.5,-19.12,Artificial drought classification due to massive baseline benchmark
+CHIKKAMAGALURU,Mudigere,Bankal,4139.0,always_deficit,5,3267.0,-28.05,-15.8,-21.07,Artificial drought classification due to massive baseline benchmark
+CHIKKAMAGALURU,Mudigere,Gonibidu,2268.1,always_excess,5,3372.9,30.07,72.75,48.71,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Tarikere,Amrutapur,881.2,always_excess,5,1057.4,2.88,33.53,20.0,Unchanged baseline normal with persistent one-sided departure
+CHIKKAMAGALURU,Tarikere,Lingadahalli,825.2,always_excess,5,1208.2,19.76,62.18,46.42,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Challakere,Nayakanahatti,427.9,always_excess,5,705.4,23.66,130.3,64.86,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Challakere,Parasurampura,410.1,always_excess,5,776.4,26.2,127.32,89.33,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Challakere,Thalku,391.9,always_excess,5,685.1,39.9,99.49,74.83,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Chitradurga,Bharmasagara,601.2,always_excess,5,880.3,8.43,67.55,46.45,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Chitradurga,Hire Guntanur,576.0,always_excess,5,806.8,7.99,54.38,40.08,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Hiriyur,Dharmapura,480.8,always_excess,5,728.9,10.91,83.16,51.58,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Hiriyur,Hiriyur,578.1,always_excess,5,755.7,0.54,74.05,30.72,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Holalkere,Ramagiri,535.0,always_excess,5,769.0,5.2,75.33,43.73,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Hosadurga,Mathodu,580.1,always_excess,5,935.3,22.56,122.59,61.25,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Hosadurga,Srirampura,564.1,always_excess,5,965.6,25.57,125.0,71.18,Unchanged baseline normal with persistent one-sided departure
+CHITRADURGA,Molakalmuru,Devasamudra,400.1,always_excess,5,645.3,31.56,105.25,61.29,Unchanged baseline normal with persistent one-sided departure
+DAKSHINA KANNADA,Beltangadi,Venur,4117.1,always_excess,5,4980.7,3.52,40.35,20.97,Unchanged baseline normal with persistent one-sided departure
+DAKSHINA KANNADA,Kadaba,Uppinangadi,3495.0,always_excess,5,4743.4,18.31,51.44,35.72,Unchanged baseline normal with persistent one-sided departure
+DAKSHINA KANNADA,Sulya,Sullia,3592.0,always_excess,5,4233.9,3.51,30.57,17.87,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Channagiri,Basavapatna_1,703.2,always_excess,5,1003.5,16.07,82.22,42.72,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Channagiri,Basavapatna_2,682.0,always_excess,5,856.8,0.03,70.23,25.64,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Channagiri,Channagiri,840.0,always_excess,5,1019.5,0.83,45.36,21.36,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Channagiri,Santebannur_2,741.0,always_excess,5,918.6,1.59,58.03,23.97,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Channagiri,Ubrani,751.8,always_excess,5,983.9,12.1,70.08,30.86,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Davanagere,Anogodu,598.9,always_excess,5,980.6,19.07,98.66,63.73,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Davanagere,Davangere,641.1,always_excess,5,898.3,10.28,68.64,40.12,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Davanagere,Mayakonda,639.0,always_excess,5,981.1,3.88,98.12,53.54,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Harihara,Malebennur,586.1,always_excess,5,880.7,8.12,91.98,50.26,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Honnali,Govinakovi,667.1,always_excess,5,888.1,4.03,77.06,33.13,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Honnali,Sasavehalli_1,719.1,always_excess,5,1056.7,3.61,109.87,46.95,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Honnali,Sasavehalli_2,640.1,always_excess,5,929.7,10.17,88.12,45.24,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Jagalur,Bilichodu,503.8,always_excess,5,854.7,36.87,118.85,69.63,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Jagalur,Jagalur,527.9,always_excess,5,832.4,35.8,99.34,57.68,Unchanged baseline normal with persistent one-sided departure
+DAVANAGERE,Jagalur,Sokke,574.2,always_excess,5,843.6,23.87,78.83,46.93,Unchanged baseline normal with persistent one-sided departure
+DHARWAD,Dharwad,Dharwad,777.0,always_excess,5,1061.2,7.75,58.94,36.59,Unchanged baseline normal with persistent one-sided departure
+DHARWAD,Hubballi,Chabbi,771.8,always_excess,5,986.4,4.51,47.15,27.79,Unchanged baseline normal with persistent one-sided departure
+DHARWAD,Kalghatgi,Dummavada,851.8,always_excess,5,1171.3,19.21,55.77,37.51,Unchanged baseline normal with persistent one-sided departure
+DHARWAD,Kalghatgi,Kalghatgi,978.8,always_excess,5,1254.9,8.43,54.37,28.21,Unchanged baseline normal with persistent one-sided departure
+DHARWAD,Kalghatgi,Tabkad Honnihalli,965.0,always_excess,5,1242.9,22.18,39.85,28.79,Unchanged baseline normal with persistent one-sided departure
+DHARWAD,Kundgol,Kundgol,661.1,always_excess,5,914.2,26.02,48.26,38.29,Unchanged baseline normal with persistent one-sided departure
+DHARWAD,Kundgol,Saunshi,696.0,always_excess,5,912.5,10.34,76.15,31.12,Unchanged baseline normal with persistent one-sided departure
+GADAG,Laxmeshwar,Laxmeshwar,593.8,always_excess,5,787.4,7.74,95.29,32.59,Unchanged baseline normal with persistent one-sided departure
+GADAG,Mundargi,Dambal,461.9,always_excess,5,728.9,21.21,130.52,57.81,Unchanged baseline normal with persistent one-sided departure
+GADAG,Mundargi,Mundargi,557.0,always_excess,5,692.0,11.85,45.06,24.24,Unchanged baseline normal with persistent one-sided departure
+GADAG,Naragund,Naragund,556.9,always_excess,5,781.1,22.67,70.2,40.26,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Arasikere,Arasikere,695.8,always_excess,5,886.4,7.76,52.16,27.39,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Arasikere,Banavara,564.2,always_excess,5,983.3,44.58,114.89,74.29,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Arasikere,Gandasi,661.0,always_excess,5,1006.2,18.31,74.13,52.22,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Arasikere,Kanakatte,595.2,always_excess,5,926.7,24.37,77.98,55.69,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Arkalgud,Konanuru,797.0,always_excess,5,1146.6,10.66,91.09,43.85,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Belur,Bikkodu,1213.2,always_excess,5,1491.3,1.65,50.89,22.93,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Belur,Halebeedu,1305.1,always_deficit,5,990.3,-37.55,-7.43,-24.12,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Channarayapatna,Baguru,778.8,always_excess,5,1056.9,9.37,69.19,35.7,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Channarayapatna,Dandiganahalli,692.0,always_excess,5,978.2,3.47,81.94,41.37,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Channarayapatna,Hirisave,768.1,always_excess,5,1177.9,20.05,104.82,53.35,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Channarayapatna,Nuggehalli,669.0,always_excess,5,1104.0,23.24,138.86,65.02,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Hassan,Dudda,652.2,always_excess,5,966.2,15.56,90.95,48.14,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Hassan,Hassan,845.8,always_excess,5,1046.2,1.42,55.56,23.69,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Hassan,Kattya,692.8,always_excess,5,1091.6,21.93,105.48,57.56,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Hassan,Salagame,816.1,always_excess,5,1102.2,0.98,67.92,35.06,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Hassan,Shantigrama,661.2,always_excess,5,1032.9,20.7,115.28,56.23,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Sakaleshpura,Hanbalu,2377.1,always_excess,5,3796.0,41.65,82.84,59.69,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Sakaleshpura,Hettur,2218.1,always_excess,5,4493.3,49.5,192.49,102.57,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Sakaleshpura,Sakaleshpur,2246.9,always_excess,5,2900.5,3.74,52.35,29.09,Unchanged baseline normal with persistent one-sided departure
+HASSAN,Sakaleshpura,Yaslur,1783.2,always_excess,5,3138.2,38.14,100.28,75.99,Unchanged baseline normal with persistent one-sided departure
+HAVERI,Byadgi,Byadgi,678.8,always_excess,5,845.4,2.49,41.38,24.53,Unchanged baseline normal with persistent one-sided departure
+HAVERI,Haveri,Guttal,618.8,always_excess,5,770.7,15.02,42.16,24.54,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Afzalpur,Afzalpur,692.0,always_excess,5,836.7,2.46,48.57,20.91,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Afzalpur,Atanur,707.1,always_excess,5,909.5,9.05,49.57,28.63,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Afzalpur,Karajgi,663.9,always_excess,5,834.3,12.25,53.32,25.67,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Aland,Aland,763.1,always_excess,5,1017.0,14.02,60.36,33.28,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Aland,Khajuri,757.0,always_excess,5,1013.1,23.25,43.59,33.83,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Aland,Madana Hipparga,735.1,always_excess,5,988.3,18.34,69.76,34.44,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Aland,Narona,766.1,always_excess,5,988.3,6.79,53.66,28.99,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Aland,Nimbarga Tanda,761.2,always_excess,5,969.2,10.15,58.52,27.32,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Chittapur,Chittapur,771.1,always_excess,5,1044.8,14.53,52.9,35.49,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Chittapur,Gundgurti,776.8,always_excess,5,968.5,7.21,49.03,24.68,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Chittapur,Nalavara,791.1,always_excess,5,1025.1,11.16,57.89,29.59,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Kalaburagi,Aurad,777.2,always_excess,5,1009.9,6.39,52.12,29.95,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Kalaburagi,Kalaburagi,793.9,always_excess,5,1036.3,4.5,55.79,30.52,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Kalagi,Gundgurti,772.9,always_excess,5,1004.7,8.02,58.21,29.99,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Kalagi,Kalagi,765.8,always_excess,5,1075.1,14.27,71.15,40.39,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Kamalapura,Kamalapur,762.0,always_excess,5,1015.7,12.48,67.59,33.3,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Kamalapura,Mahagaon Tanda,772.0,always_excess,5,1060.2,18.39,72.28,37.33,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Kamalapura,Narona,770.1,always_excess,5,1103.1,15.45,73.51,43.24,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Sedam,Adki,807.0,always_excess,5,1039.8,9.42,64.19,28.85,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Sedam,Mudhol,806.9,always_excess,5,1095.5,7.31,63.69,35.76,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Sedam,Sedam,790.9,always_excess,5,1021.9,15.04,48.42,29.2,Unchanged baseline normal with persistent one-sided departure
+KALABURAGI,Shahbadha,Shahabad,758.2,always_excess,5,976.4,10.4,45.38,28.78,Unchanged baseline normal with persistent one-sided departure
+KODAGU,Madikeri,Bhagamandala,5784.0,always_deficit,5,4515.5,-26.97,-10.74,-21.93,Artificial drought classification due to massive baseline benchmark
+KODAGU,Madikeri,Napoklu,2832.9,always_excess,5,3255.3,0.32,24.21,14.91,Unchanged baseline normal with persistent one-sided departure
+KODAGU,Somwarpet,Santhahalli,2294.1,always_excess,5,3593.2,26.81,93.71,56.63,Unchanged baseline normal with persistent one-sided departure
+KODAGU,Virajpet,Virajpet,2467.9,always_excess,5,2900.0,4.82,27.51,17.51,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Bangarapet,Budikote,687.0,always_excess,5,945.0,6.45,75.69,37.55,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Bangarapet,Kamsandra,778.0,always_excess,5,1023.6,7.03,62.6,31.58,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Bangarapet,Robertsonpet,818.1,always_excess,5,1109.3,12.64,63.08,35.6,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Kolar,Holuru,744.9,always_excess,5,1079.5,4.67,82.95,44.92,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Malur,Lakkur,528.9,always_excess,5,1062.4,43.14,184.31,100.85,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Malur,Masathi,632.8,always_excess,5,1088.7,27.92,148.34,72.04,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Malur,Tyakal,649.1,always_excess,5,1042.1,21.35,123.27,60.55,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Mulabagilu,Avani,775.1,always_excess,5,1145.4,4.0,87.74,47.77,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Mulabagilu,Bairakur,734.1,always_excess,5,1081.7,26.98,80.11,47.35,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Mulabagilu,Duggasandra,752.8,always_excess,5,1025.0,2.03,82.6,36.16,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Mulabagilu,Tayilur,708.0,always_excess,5,1092.0,7.71,82.06,54.23,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Srinivasapura,Nelavanki,664.1,always_excess,5,1223.0,20.7,196.08,84.17,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Srinivasapura,Rayalpadu,639.2,always_excess,5,1041.3,20.69,124.57,62.93,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Srinivasapura,Ronuru,711.0,always_excess,5,1013.5,22.5,76.79,42.55,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Srinivasapura,Srinivasapura,757.8,always_excess,5,1075.0,6.55,91.95,41.85,Unchanged baseline normal with persistent one-sided departure
+KOLAR,Srinivasapura,Yelldur,710.1,always_excess,5,932.5,3.34,75.21,31.32,Unchanged baseline normal with persistent one-sided departure
+KOPPALA,Gangavathi,Gangavathi,583.0,always_excess,5,727.6,14.51,41.68,24.81,Unchanged baseline normal with persistent one-sided departure
+KOPPALA,Kanakagiri,Hulihaider,557.8,always_excess,5,713.9,1.97,62.71,27.99,Unchanged baseline normal with persistent one-sided departure
+KOPPALA,Kanakagiri,Kanakagiri,525.1,always_excess,5,705.9,10.48,65.9,34.44,Unchanged baseline normal with persistent one-sided departure
+KOPPALA,Yelburga,Hire Wankalkunti,594.9,always_excess,5,713.6,3.36,39.66,19.96,Unchanged baseline normal with persistent one-sided departure
+KOPPALA,Yelburga,Yelburga,596.9,always_excess,5,705.8,0.34,41.21,18.24,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Krishnarajapet,Bukanakere,700.1,always_excess,5,923.2,12.5,96.57,31.88,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Krishnarajapet,Santebachahalli,652.0,always_excess,5,1130.4,25.15,153.07,73.36,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Krishnarajapet,Silanare,697.9,always_excess,5,1066.8,5.01,128.08,52.86,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Malavalli,B G Pura_1,772.8,always_excess,5,927.4,0.41,51.62,20.0,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Malavalli,Kirgavalu_2,721.0,always_excess,5,981.4,3.23,106.93,36.11,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Malavalli,Kirgavalu_3,718.8,always_excess,5,958.2,3.63,86.09,33.29,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Mandya,Basaralu_1,609.8,always_excess,5,1004.5,5.57,184.75,64.71,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Mandya,Dudda_1,648.9,always_excess,5,993.3,8.69,152.85,53.07,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Nagamangala,Belluru,520.0,always_excess,5,1193.9,68.1,234.04,129.59,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Nagamangala,Bendaganavele,556.2,always_excess,5,1085.5,42.42,151.62,95.18,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Nagamangala,Devalapura,692.0,always_excess,5,971.2,8.18,97.54,40.34,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Nagamangala,Honakere,465.1,always_excess,5,936.0,40.43,187.1,101.23,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Pandavapura,Chinkurali,684.2,always_excess,5,1000.0,19.07,103.22,46.16,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Pandavapura,Pandavapura_2,660.2,always_excess,5,927.1,4.27,112.88,40.44,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Srirangapatna,Arakere,700.9,always_excess,5,985.7,13.06,108.56,40.63,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Srirangapatna,K Shettihalli_1,642.9,always_excess,5,963.8,9.63,113.06,49.9,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Srirangapatna,K Shettihalli_2,650.2,always_excess,5,981.4,8.99,130.15,50.94,Unchanged baseline normal with persistent one-sided departure
+MANDYA,Srirangapatna,Srirangapatna,638.0,always_excess,5,993.7,19.44,129.31,55.75,Unchanged baseline normal with persistent one-sided departure
+MYSURU,Heggadadevanakote,Heggadadevanakote,836.8,always_excess,5,1076.4,6.93,70.01,28.63,Unchanged baseline normal with persistent one-sided departure
+MYSURU,Krishnarajanagar,Hasa Agrahar,682.0,always_excess,5,946.2,4.08,113.2,38.74,Unchanged baseline normal with persistent one-sided departure
+MYSURU,Krishnarajanagar,Hebbalu,721.1,always_excess,5,899.9,3.66,92.09,24.8,Unchanged baseline normal with persistent one-sided departure
+MYSURU,Periyapatna,Bettadpur,770.0,always_excess,5,1005.0,1.56,68.83,30.51,Unchanged baseline normal with persistent one-sided departure
+MYSURU,T.Narasipura,Bannur,721.1,always_excess,5,994.3,9.76,105.41,37.88,Unchanged baseline normal with persistent one-sided departure
+MYSURU,T.Narasipura,Sosale,737.9,always_excess,5,1007.1,2.05,78.32,36.48,Unchanged baseline normal with persistent one-sided departure
+MYSURU,T.Narasipura,Talakad,776.9,always_excess,5,947.4,0.08,59.72,21.94,Unchanged baseline normal with persistent one-sided departure
+RAICHUR,Lingsugur,Gurgunta,622.2,always_excess,5,774.7,0.96,49.52,24.51,Unchanged baseline normal with persistent one-sided departure
+RAICHUR,Lingsugur,Lingasuguru,631.0,always_excess,5,761.1,6.18,34.23,20.61,Unchanged baseline normal with persistent one-sided departure
+RAICHUR,Maski,Gunjihalli,609.2,always_excess,5,724.0,4.02,43.68,18.85,Unchanged baseline normal with persistent one-sided departure
+RAICHUR,Maski,Turvihal,603.2,always_excess,5,807.2,10.7,63.68,33.83,Unchanged baseline normal with persistent one-sided departure
+RAICHUR,Sindhanur,Badarli,662.9,always_excess,5,795.3,3.18,51.85,19.96,Unchanged baseline normal with persistent one-sided departure
+RAICHUR,Sindhanur,Jawalgeri,655.9,always_excess,5,823.5,7.04,55.19,25.55,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Kanakapura,Kodihalli,802.2,always_excess,5,1046.4,13.7,68.83,30.45,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Magadi,Kuduru,841.1,always_excess,5,1230.7,21.94,106.18,46.33,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Magadi,Madabal,968.2,always_excess,5,1116.4,0.32,54.24,15.31,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Magadi,Solur,881.0,always_excess,5,1157.8,7.87,69.24,31.41,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Magadi,Tippasanara,822.1,always_excess,5,1103.2,14.68,78.71,34.2,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Ramanagara,Kailancha,867.2,always_excess,5,1108.1,3.24,82.24,27.79,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Ramanagara,Kailancha_2,871.9,always_excess,5,1085.0,1.12,74.08,24.44,Unchanged baseline normal with persistent one-sided departure
+RAMANAGARA,Ramanagara,Ramanagara_2,889.1,always_excess,5,1091.0,2.55,82.0,22.7,Unchanged baseline normal with persistent one-sided departure
+SHIVAMOGGA,Bhadravathi,Hole Honnuru_2,799.8,always_excess,5,1125.5,15.62,74.0,40.72,Unchanged baseline normal with persistent one-sided departure
+SHIVAMOGGA,Bhadravathi,Hole Honnuru_3,845.8,always_excess,5,1133.6,16.67,46.93,34.03,Unchanged baseline normal with persistent one-sided departure
+SHIVAMOGGA,Hosanagara,Nagar,5204.9,always_deficit,5,4536.6,-21.88,-3.75,-12.84,Artificial drought classification due to massive baseline benchmark
+SHIVAMOGGA,Sagara,Sagar,2494.8,always_deficit,5,2055.7,-38.88,-4.65,-17.6,Unchanged baseline normal with persistent one-sided departure
+SHIVAMOGGA,Shikaripura,Udagani,1036.9,always_excess,5,1262.1,5.98,33.42,21.72,Unchanged baseline normal with persistent one-sided departure
+SHIVAMOGGA,Tirthahalli,Agumbe,7565.0,always_deficit,5,4629.4,-51.16,-28.84,-38.81,Artificial drought classification due to massive baseline benchmark
+SHIVAMOGGA,Tirthahalli,Mandagadde,1690.0,always_excess,5,2120.0,0.56,47.54,25.44,Unchanged baseline normal with persistent one-sided departure
+SHIVAMOGGA,Tirthahalli,Thirthahalli,2866.9,always_excess,5,3255.1,5.72,26.52,13.54,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Chikkanayakanahalli,Handanakere,594.9,always_excess,5,925.1,20.34,75.97,55.52,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Chikkanayakanahalli,Huliyaru,504.0,always_excess,5,951.1,36.9,138.1,88.69,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Chikkanayakanahalli,Kandikere,609.9,always_excess,5,1003.2,11.24,120.33,64.5,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Chikkanayakanahalli,Shettikeri,700.1,always_excess,5,1007.3,8.0,82.71,43.89,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Gubbi,Chandrashekerapura,692.0,always_excess,5,1085.1,16.45,127.46,56.82,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Gubbi,Chelur,729.2,always_excess,5,1104.3,7.41,104.12,51.45,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Gubbi,Gubbi,809.2,always_excess,5,1188.3,9.15,99.63,46.86,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Gubbi,Hagalavadi,655.0,always_excess,5,1056.5,12.37,99.54,61.3,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Gubbi,Nittur,789.1,always_excess,5,1134.5,5.83,90.37,43.78,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Koratagere,Chennarayadurga,787.0,always_excess,5,1156.8,0.22,103.43,46.98,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Kunigal,Amrutur,675.2,always_excess,5,1094.7,29.48,125.63,62.14,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Kunigal,Huliyurudurga,741.2,always_excess,5,1065.2,19.73,92.58,43.73,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Kunigal,Huttariduraga,799.1,always_excess,5,1179.0,21.03,93.24,47.54,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Kunigal,Kottagere,752.2,always_excess,5,1053.3,4.6,104.92,40.04,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Kunigal,Kunigal,825.0,always_excess,5,1145.2,8.24,99.64,38.82,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Kunigal,Yedeyur,669.0,always_excess,5,1067.8,24.89,147.68,59.61,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Madhugiri,Dodderi,594.0,always_excess,5,1068.8,23.64,158.75,79.92,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Madhugiri,Itakadibbanahalli,615.9,always_excess,5,975.3,4.19,116.23,58.36,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Madhugiri,Midigesi,553.2,always_excess,5,986.8,20.91,148.28,78.4,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Pavagada,Nagalamadike,587.9,always_excess,5,804.1,0.03,68.54,36.78,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Pavagada,Nidagal,518.0,always_excess,5,966.4,28.82,158.88,86.56,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Pavagada,Pavagada,611.2,always_excess,5,883.2,0.34,89.53,44.51,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Pavagada,Yellappanayakana Hosakote,532.0,always_excess,5,854.8,14.74,112.97,60.68,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Sira,Bukkaptna,578.9,always_excess,5,905.0,19.52,87.91,56.32,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Sira,Gowdagere,580.8,always_excess,5,870.7,20.12,112.05,49.9,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Sira,Hulikunta,505.9,always_excess,5,931.6,38.18,138.54,84.14,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Sira,Kallambella,606.0,always_excess,5,953.3,13.7,100.33,57.31,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Sira,Sira,637.9,always_excess,5,887.0,3.06,81.97,39.05,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tiptur,Honnavalli,705.2,always_excess,5,1021.8,19.34,76.31,44.91,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tiptur,Kibbanahalli,607.2,always_excess,5,1136.0,56.01,130.81,87.1,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tiptur,Nonavinakere,719.9,always_excess,5,1118.3,23.19,108.47,55.33,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tiptur,Tiptur,731.0,always_excess,5,1029.3,16.04,69.08,40.81,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tumakuru,Bellavi,788.0,always_excess,5,1167.8,0.96,104.44,48.2,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tumakuru,Guluru,869.1,always_excess,5,1120.8,2.82,78.48,28.96,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tumakuru,Hebbur,678.0,always_excess,5,1092.1,24.22,113.13,61.08,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Tumakuru,Kora,788.1,always_excess,5,1235.6,2.79,111.93,56.78,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Turuvekere,Dandinasivara,707.1,always_excess,5,1065.9,20.65,100.57,50.74,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Turuvekere,Mayasandra,657.0,always_excess,5,1133.6,29.68,155.4,72.55,Unchanged baseline normal with persistent one-sided departure
+TUMAKURU,Turuvekere,Turuvekere,772.1,always_excess,5,1048.6,12.73,81.48,35.82,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Brahmavara,Brahmavara,4043.0,always_excess,5,4642.1,1.63,26.05,14.82,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Brahmavara,Kota,3524.9,always_excess,5,4553.3,14.35,44.0,29.18,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Bynduru,Bainduru,4428.0,always_excess,5,5338.8,8.65,28.41,20.57,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Kapu,Kapu,3757.0,always_excess,5,4476.9,1.76,39.63,19.16,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Karkala,Ajekar,4755.0,always_excess,5,5336.2,3.53,20.37,12.22,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Kundapur,Kundapur,3786.0,always_excess,5,4761.1,16.83,32.73,25.76,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Kundapur,Vandse,4259.8,always_excess,5,5222.1,6.76,38.87,22.59,Unchanged baseline normal with persistent one-sided departure
+UDUPI,Udupi,Udupi,3861.8,always_excess,5,4516.1,2.02,33.25,16.94,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Ankola,Ankola,3532.1,always_excess,5,4539.5,1.19,53.89,28.52,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Ankola,Blale,3363.8,always_excess,5,4521.8,1.9,61.27,34.43,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Bhatkal,Mavalli,4071.0,always_excess,5,4865.9,9.56,29.46,19.52,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Bhatkal,Susgadi,4322.1,always_excess,5,5119.2,5.02,26.33,18.44,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Honnavar,Honnavar,3728.0,always_excess,5,4797.4,6.14,51.98,28.69,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Honnavar,Manki,3667.8,always_excess,5,4630.3,11.01,38.82,26.24,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Honnavar,Mavinakurvei,3869.0,always_excess,5,5225.2,8.17,52.61,35.05,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Karwar,Baad,3233.8,always_excess,5,4338.8,5.6,60.39,34.17,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Karwar,Kinnar,3447.9,always_excess,5,4519.9,0.7,54.25,31.09,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Kumta,Gokarna,3243.2,always_excess,5,4187.5,2.22,56.64,29.12,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Mundgod,Pala,1243.0,always_excess,5,1655.0,11.58,53.18,33.15,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Siddapur,Kodkani,3370.8,always_excess,5,4654.2,22.49,69.53,38.08,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Siddapur,Siddapura,3016.0,always_excess,5,3339.3,1.03,27.64,10.72,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Siddapur,Umbalamani,4455.8,always_deficit,5,3811.3,-23.92,-0.73,-14.46,Artificial drought classification due to massive baseline benchmark
+UTTARA KANNADA,Sirsi,Banavasi,1511.0,always_excess,5,2259.1,41.13,57.78,49.52,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Sirsi,Hulekal,2174.1,always_excess,5,3498.0,44.57,96.63,60.89,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Sirsi,Sampakanda,4140.8,always_excess,5,4504.3,0.27,21.62,8.78,Unchanged baseline normal with persistent one-sided departure
+UTTARA KANNADA,Sirsi,Sirsi,2360.0,always_excess,5,2821.0,14.96,31.84,19.54,Unchanged baseline normal with persistent one-sided departure
+VIJAYANAGAR,Hadagali,Hirehadagalli,652.0,always_excess,5,795.6,0.66,51.69,22.02,Unchanged baseline normal with persistent one-sided departure
+VIJAYANAGAR,Hagaribommanahalli,Hampa Sagara,617.0,always_excess,5,796.0,5.83,54.62,29.02,Unchanged baseline normal with persistent one-sided departure
+VIJAYANAGAR,Harappanahalli,Arasikere,656.1,always_excess,5,902.2,12.28,67.68,37.51,Unchanged baseline normal with persistent one-sided departure
+VIJAYANAGAR,Kotturu,Hoshalli,560.2,always_excess,5,850.0,18.93,75.48,51.74,Unchanged baseline normal with persistent one-sided departure
+VIJAYANAGAR,Kotturu,Kotturu,533.0,always_excess,5,840.6,40.15,85.63,57.7,Unchanged baseline normal with persistent one-sided departure
+VIJAYANAGAR,Kudligi,Hosahalli,504.0,always_excess,5,774.8,32.68,83.75,53.72,Unchanged baseline normal with persistent one-sided departure
+VIJAYANAGAR,Kudligi,Kudligi,589.9,always_excess,5,850.2,28.01,55.08,44.13,Unchanged baseline normal with persistent one-sided departure
+VIJAYAPURA,Chadachana,Chadchan,552.2,always_excess,5,772.2,8.24,91.75,39.85,Unchanged baseline normal with persistent one-sided departure
+VIJAYAPURA,Indi,Ballolli,563.2,always_excess,5,716.1,0.18,66.54,27.16,Unchanged baseline normal with persistent one-sided departure
+VIJAYAPURA,Talikote,Dhavalagi,612.2,always_excess,5,765.8,2.73,56.92,25.1,Unchanged baseline normal with persistent one-sided departure
+VIJAYAPURA,Talikote,Talikoti,585.9,always_excess,5,784.1,7.89,65.5,33.83,Unchanged baseline normal with persistent one-sided departure
+VIJAYAPURA,Tikota,Tikota,405.8,always_excess,5,743.0,46.06,122.84,83.11,Unchanged baseline normal with persistent one-sided departure
+VIJAYAPURA,Vijayapura,Nagathan,392.1,always_excess,5,676.6,25.72,103.57,72.55,Unchanged baseline normal with persistent one-sided departure
+YADGIR,Gurumithakala,Gurmitakal,773.1,always_excess,5,1028.7,7.5,48.25,33.06,Unchanged baseline normal with persistent one-sided departure
+YADGIR,Hunisigi,Hunasagi,500.8,always_excess,5,761.7,1.0,104.78,52.1,Unchanged baseline normal with persistent one-sided departure
+YADGIR,Shorapur,Kakkeri,575.9,always_excess,5,786.4,8.68,54.86,36.56,Unchanged baseline normal with persistent one-sided departure
+YADGIR,Vadagera,Doranahlli,715.2,always_excess,5,908.4,3.15,64.76,27.02,Unchanged baseline normal with persistent one-sided departure
