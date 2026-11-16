@@ -100,37 +100,37 @@
   a new district block; when a name matches a known taluk it starts a new taluk block; 
   otherwise the row inherits the current district/taluk.
 
-- **137** hobli rows where the 2025 inference differs from the majority 
+- **87** hobli rows where the 2025 inference differs from the majority 
   vote across 2020-2023 (only shown when ≥ 2 other years agree):
 
 | Hobli | 2025 district | 2025 taluk | Majority district | Majority taluk | Votes |
 |-------|---------------|------------|------------------|----------------|-------|
+| bengaluru urban | BENGALURU URBAN | UNKNOWN | BENGALURU URBAN |  | 4/4 |
 | channarayapatna | BENGALURU RURAL | Channarayapatna | HASSAN | Channarayapatna | 8/12 |
 | kundana | BENGALURU RURAL | Channarayapatna | BENGALURU RURAL | Devanahalli | 4/4 |
-| vijaypura | BENGALURU RURAL | Vijaypura | BENGALURU RURAL | Devanahalli | 4/4 |
-| doddaballapura | BENGALURU RURAL | Doddaballapura | BENGALURU RURAL | DODDABALLAPURA | 3/4 |
-| dodballapur | BENGALURU RURAL | Dodballapur | BENGALURU RURAL | DODDABALLAPURA | 3/4 |
-| hosakote | BENGALURU RURAL | Hosakote | BENGALURU RURAL | HOSAKOTE | 6/8 |
-| maluru | RAMANAGARA | Maluru | RAMANAGARA | Channapatna | 4/4 |
-| harohalli | RAMANAGARA | Harohalli | RAMANAGARA | Kanakapura | 3/5 |
-| mulabagilu | KOLAR | Mulabagilu | KOLAR | MULABAGILU | 3/4 |
+| dodda belavangala | BENGALURU RURAL | Dodballapur | BENGALURU RURAL | DODDABALLAPURA | 3/4 |
+| virupakshipura | RAMANAGARA | Maluru | RAMANAGARA | Channapatna | 4/4 |
+| dodda maralavadi | RAMANAGARA | Harohalli | RAMANAGARA | Kanakapura | 3/4 |
 | robertsonpet | KOLAR | K.G.F | KOLAR | Bangarapet | 4/8 |
-| chikballapura | CHIKKABALLAPURA | Chikballapura | CHIKKABALLAPURA | CHIKKABALLAPURA | 3/4 |
-| chikkanayakanahalli | TUMAKURU | Chikkanayakanahalli | TUMAKURU | CHIKKANAYAKANAHALLI | 3/4 |
-| chiknayakanahalli | TUMAKURU | Chiknayakanahalli | TUMAKURU | CHIKKANAYAKANAHALLI | 3/4 |
+| mandikal | CHIKKABALLAPURA | Chikballapura | CHIKKABALLAPURA | CHIKKABALLAPURA | 3/4 |
+| handanakere | TUMAKURU | Chiknayakanahalli | TUMAKURU | CHIKKANAYAKANAHALLI | 3/4 |
 | chelur | TUMAKURU | Gubbi | CHIKKABALLAPURA | Bagepalli | 4/8 |
 | kadaba | TUMAKURU | Kadaba | DAKSHINA KANNADA | Kadaba | 8/12 |
 | nittur | TUMAKURU | Kadaba | TUMAKURU | Gubbi | 4/4 |
 | guluru | TUMAKURU | Tumakuru | CHIKKABALLAPURA | Bagepalli | 4/8 |
-| davangere | DAVANAGERE | Davangere | DAVANAGERE | Davanagere | 4/4 |
-| harihara | DAVANAGERE | Harihara | DAVANAGERE | HARIHARA | 6/8 |
-| hangala | CHAMARAJANAGARA | Hangala | CHAMARAJANAGARA | Gundlupet | 4/4 |
-| kollegala | CHAMARAJANAGARA | Kollegala | CHAMARAJANAGARA | Kollegal | 4/4 |
-| agara | CHAMARAJANAGARA | Agara | CHAMARAJANAGARA | Yelandur | 4/4 |
-| heggadadevanakote | MYSURU | Heggadadevanakote | MYSURU | HEGGADADEVANAKOTE | 6/8 |
-| jayapura | MYSURU | Jayapura | MYSURU | Mysuru | 4/4 |
-| nanjangud | MYSURU | Nanjangud | MYSURU | Nanjanagud | 4/4 |
-... and 112 more
+| anogodu | DAVANAGERE | Davangere | DAVANAGERE | Davanagere | 4/4 |
+| palya | CHAMARAJANAGARA | Kollegala | CHAMARAJANAGARA | Kollegal | 4/8 |
+| varuna | MYSURU | Jayapura | MYSURU | Mysuru | 4/4 |
+| biligere | MYSURU | Nanjangud | MYSURU | Nanjanagud | 4/4 |
+| ravanduru | MYSURU | Haranahalli | MYSURU | Periyapatna | 4/4 |
+| bannur | MYSURU | T.Narasipur | MYSURU | T.NARASIPURA | 3/4 |
+| mirale | MYSURU | Saligram | MYSURU | Krishnarajanagar | 3/4 |
+| belagola | MANDYA | Arakere | MANDYA | Srirangapatna | 4/4 |
+| koluru | BALLARI | Kurugodu | BALLARI | Ballari | 4/8 |
+| alawandi | KOPPALA | Koppal | KOPPALA | KOPPALA | 3/4 |
+| gurgunta | RAICHUR | Lingasuguru | RAICHUR | Lingsugur | 4/4 |
+| gunjihalli | RAICHUR | Maski | RAICHUR | Sindhanur | 4/8 |
+... and 62 more
 
 ## Yearly counts
 
