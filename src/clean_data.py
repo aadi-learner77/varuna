@@ -277,15 +277,21 @@ def clean_and_match_names(df_all):
     df_all["hobli_clean"] = df_all["hobli_raw"].apply(clean_text)
 
     # 3. Suffix management:
-    # Identify base name and check if it is standalone within that taluk and year
+    # A suffix (_1, _2, _A, _B) is a spurious duplicate marker ONLY if the base name has NO other
+    # sibling stations across the entire district and dataset. If multiple stations exist (e.g. Mangaluru_A and Mangaluru_B),
+    # the suffix distinguishes different physical hoblis and must NEVER be stripped or merged.
     df_all["hobli_base"] = df_all["hobli_clean"].apply(lambda x: re.sub(r"_[0-9a-zA-Z]+$", "", x).strip().lower())
-    base_counts = df_all.groupby(["district", "taluk", "year", "hobli_base"])["hobli_clean"].transform("count")
-    df_all["is_standalone_suffix"] = (base_counts == 1) & df_all["hobli_clean"].str.contains(r"_[0-9a-zA-Z]+$")
+    dist_base_variants = df_all.groupby(["district", "hobli_base"])["hobli_clean"].transform("nunique")
+    df_all["is_standalone_suffix"] = (dist_base_variants == 1) & df_all["hobli_clean"].str.contains(r"_[0-9a-zA-Z]+$")
 
     def standardize_suffix(r):
         h = r["hobli_clean"]
         if r["is_standalone_suffix"]:
             h = re.sub(r"_[0-9a-zA-Z]+$", "", h).strip()
+        # Preserve letter suffix capitalization if present (e.g. Mangaluru_A, Mangaluru_B)
+        if re.search(r"_[a-zA-Z]$", h):
+            base, suff = h.rsplit("_", 1)
+            return f"{base.title()}_{suff.upper()}"
         return h.title()
 
     df_all["hobli_std"] = df_all.apply(standardize_suffix, axis=1)

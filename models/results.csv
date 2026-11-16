@@ -7,3 +7,5 @@ classifier,Gradient Boosting,0.732261359660011,0.4674116189849073,0.678823529411
 regression,Predict Zero Baseline,,,,,,21.648176470588236
 regression,Predict Train Mean Baseline,,,,,,24.534625771626303
 regression,Gradient Boosting Regressor,,,,,,24.417680507521048
+regression,Random Forest Regressor,,,,,,26.35059829868789
+regression,Ridge Regression (Dropped - MAE > 30%),,,,,,53.78625837307704

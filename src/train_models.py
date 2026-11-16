@@ -152,6 +152,20 @@ def train_classifiers(X_train, y_train, groups_train, X_test, y_test):
     cv_results = {}
     test_results = {}
 
+    # Calculate majority-class share across the 5 validation folds
+    val_majority_shares = []
+    train_majority_shares = []
+    for tr_idx, val_idx in gkf.split(X_train, y_train, groups=groups_train):
+        y_val_fold = y_train.iloc[val_idx]
+        y_tr_fold = y_train.iloc[tr_idx]
+        val_majority_shares.append((y_val_fold == y_val_fold.mode()[0]).mean() * 100)
+        train_majority_shares.append((y_tr_fold == y_tr_fold.mode()[0]).mean() * 100)
+
+    cv_results["_majority_share_val_mean"] = float(np.mean(val_majority_shares))
+    cv_results["_majority_share_val_std"] = float(np.std(val_majority_shares))
+    cv_results["_majority_share_train_mean"] = float(np.mean(train_majority_shares))
+    cv_results["_majority_share_train_std"] = float(np.std(train_majority_shares))
+
     # 1. 5-Fold District-Grouped CV
     for name, pipeline in classifiers.items():
         acc_scores = []
@@ -405,8 +419,10 @@ def main():
     print("\n--- 2. District-Grouped CV (Pre-2025 Train Set) & Out-of-Time Test (2025) ---")
     cv_res, test_res = train_classifiers(X_train, y_train, groups_train, X_test, y_test)
 
-    print("\n5-Fold District-Grouped Cross-Validation (Pre-2025 Train):")
+    print(f"\n5-Fold District-Grouped Cross-Validation (Pre-2025 Train; Validation Fold Majority-Class Share: {cv_res['_majority_share_val_mean']:.2f}% +/- {cv_res['_majority_share_val_std']:.2f}%):")
     for name, r in cv_res.items():
+        if name.startswith("_"):
+            continue
         print(f"  {name:<22}: CV Acc = {r['cv_acc_mean']:.4f} (+/- {r['cv_acc_std']:.4f}) | CV Macro-F1 = {r['cv_f1_mean']:.4f} (+/- {r['cv_f1_std']:.4f}) | Drought Recall = {r['cv_drought_recall']:.4f}")
 
     print("\nOut-of-Time Hold-Out Test (2025):")
@@ -439,8 +455,11 @@ def main():
     reg_res, dist_comp = run_departure_regression(train_df, test_df)
     print(f"  Baseline 1 (Predict Zero = 0.0%):        MAE = {reg_res['baseline_zero']['mae']:.2f}%")
     print(f"  Baseline 2 (Predict Train Mean = {reg_res['baseline_train_mean']['value']:.2f}%): MAE = {reg_res['baseline_train_mean']['mae']:.2f}%")
-    for name in ["Ridge Regression", "Random Forest Regressor", "Gradient Boosting Regressor"]:
+    for name in ["Random Forest Regressor", "Gradient Boosting Regressor"]:
         print(f"  {name:<28}: MAE = {reg_res[name]['mae']:.2f}%")
+    if "Ridge Regression" in reg_res:
+        ridge_val = reg_res["Ridge Regression"]["mae"]
+        print(f"  Ridge Regression (with scaling)     : MAE = {ridge_val:.2f}% -> [DROPPED: MAE > 30.0% due to linear extrapolation of n_prior_years time index]")
 
     print("\nTrain vs Test Feature Distribution Comparison:")
     for col, d in dist_comp.items():
@@ -470,6 +489,8 @@ def main():
         {"model_type": "regression", "model_name": "Predict Zero Baseline", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["baseline_zero"]["mae"]},
         {"model_type": "regression", "model_name": "Predict Train Mean Baseline", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["baseline_train_mean"]["mae"]},
         {"model_type": "regression", "model_name": "Gradient Boosting Regressor", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["Gradient Boosting Regressor"]["mae"]},
+        {"model_type": "regression", "model_name": "Random Forest Regressor", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["Random Forest Regressor"]["mae"]},
+        {"model_type": "regression", "model_name": "Ridge Regression (Dropped - MAE > 30%)", "cv_accuracy": np.nan, "cv_macro_f1": np.nan, "test_accuracy": np.nan, "test_macro_f1": np.nan, "drought_recall": np.nan, "test_mae": reg_res["Ridge Regression"]["mae"]},
     ]
     pd.DataFrame(results_rows).to_csv(RESULTS_PATH, index=False)
     print(f"[OK] Saved results summary table to {RESULTS_PATH}")
