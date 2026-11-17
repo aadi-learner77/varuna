@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="auto">
+  <defs>
+    <filter id="winShadow" x="-2%" y="-2%" width="104%" height="106%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- App Window Container -->
+  <rect width="1200" height="800" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" filter="url(#winShadow)"/>
+
+  <!-- Browser Header Bar -->
+  <rect width="1200" height="42" rx="8" fill="#e2e8f0"/>
+  <rect y="34" width="1200" height="8" fill="#e2e8f0"/>
+  <circle cx="20" cy="21" r="5.5" fill="#ef4444"/>
+  <circle cx="38" cy="21" r="5.5" fill="#f59e0b"/>
+  <circle cx="56" cy="21" r="5.5" fill="#10b981"/>
+
+  <!-- Browser URL Bar -->
+  <rect x="180" y="8" width="840" height="26" rx="13" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="210" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#0369a1" font-weight="500">
+    🔒 https://varuna-ml.streamlit.app
+  </text>
+
+  <!-- Main Body Layout: Sidebar (Left: 270px) + Main Content (Right: 930px) -->
+  <!-- Sidebar -->
+  <rect x="0" y="42" width="270" height="758" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="82" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#0f172a">🌧️ Karnataka</text>
+  <text x="24" y="102" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#64748b">Hobli Drought-Risk Predictor</text>
+  <line x1="24" y1="116" x2="246" y2="116" stroke="#cbd5e1" stroke-width="1"/>
+
+  <!-- Sidebar Dropdowns -->
+  <text x="24" y="142" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#475569">SELECT DISTRICT</text>
+  <rect x="24" y="150" width="222" height="34" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="36" y="172" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#0f172a">SHIVAMOGGA</text>
+
+  <text x="24" y="206" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#475569">SELECT TALUK</text>
+  <rect x="24" y="214" width="222" height="34" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="36" y="236" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#0f172a">Tirthahalli</text>
+
+  <text x="24" y="270" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#475569">SELECT HOBLI (STATION)</text>
+  <rect x="24" y="278" width="222" height="34" rx="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="36" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#0284c7">Agumbe</text>
+
+  <rect x="24" y="336" width="222" height="150" rx="6" fill="#e2e8f0" fill-opacity="0.6"/>
+  <text x="36" y="360" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="600" fill="#1e293b">Station Metadata</text>
+  <text x="36" y="384" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">&bull; Clust: 3 (Deficit-Vulnerable)</text>
+  <text x="36" y="404" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">&bull; Normal: 7,565.0 mm</text>
+  <text x="36" y="424" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">&bull; 5-Yr Dep Mean: -38.81%</text>
+  <text x="36" y="444" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#dc2626" font-weight="600">&bull; Flag: Suspect Normal</text>
+
+  <!-- Main View Area -->
+  <g transform="translate(295, 42)">
+    <!-- App Title & Tab Bar -->
+    <text x="0" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700" fill="#0f172a">
+      🌧️ Karnataka Hobli Rainfall Deviation &amp; Drought-Risk Prediction
+    </text>
+    <text x="0" y="60" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" fill="#64748b">
+      Selected Station: <strong style="color:#0f172a;">Agumbe</strong> &bull; Taluk: Tirthahalli &bull; District: SHIVAMOGGA
+    </text>
+
+    <!-- Navigation Tabs -->
+    <g transform="translate(0, 76)">
+      <rect x="0" y="0" width="130" height="34" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#0284c7">📍 Hobli Report</text>
+
+      <rect x="136" y="0" width="155" height="34" rx="4" fill="#f1f5f9"/>
+      <text x="148" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#64748b">🌐 Risk Zones (k=4)</text>
+
+      <rect x="297" y="0" width="150" height="34" rx="4" fill="#f1f5f9"/>
+      <text x="309" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#64748b">🗺️ District Trends</text>
+
+      <rect x="453" y="0" width="145" height="34" rx="4" fill="#f1f5f9"/>
+      <text x="465" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#64748b">🔍 Data Quality</text>
+
+      <rect x="604" y="0" width="165" height="34" rx="4" fill="#f1f5f9"/>
+      <text x="616" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#64748b">⚖️ Model Limits</text>
+    </g>
+
+    <!-- Tab 1 Body Content -->
+    <!-- Suspect Normal Warning Banner -->
+    <g transform="translate(0, 126)">
+      <rect width="875" height="66" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.2"/>
+      <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#92400e">
+        ⚠️ Data Quality Warning: Unreliable Published Baseline Normal
+      </text>
+      <text x="16" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#78350f">
+        Agumbe is cataloged in reports/suspect_normals.csv with static normal of 7,565.0 mm. Even when receiving 5,383 mm of rainfall,
+      </text>
+      <text x="16" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#78350f">
+        departure is calculated as -28.8%, falsely labeling it as "drought_prone". This is a data artifact rather than aridity.
+      </text>
+    </g>
+
+    <!-- Chart (Left: 520px) + Badges (Right: 335px) -->
+    <g transform="translate(0, 206)">
+      <!-- Left Chart Card -->
+      <rect width="510" height="230" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">
+        📈 Annual Rainfall vs. Long-Term Normal (2020–2025)
+      </text>
+      <text x="16" y="40" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#94a3b8">
+        *Observed years non-consecutive (2023 missing from KSNDMC archives)
+      </text>
+
+      <!-- Bar Chart Elements -->
+      <!-- Normal Dashed Line -->
+      <line x1="60" y1="65" x2="480" y2="65" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4"/>
+      <text x="380" y="60" font-family="monospace" font-size="10" fill="#ef4444">Normal (7,565 mm)</text>
+
+      <!-- Bars -->
+      <!-- 2020 -->
+      <rect x="75" y="115" width="45" height="85" fill="#0284c7" rx="2"/>
+      <text x="82" y="108" font-family="monospace" font-size="9" fill="#0369a1">4,152</text>
+      <text x="84" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">2020</text>
+
+      <!-- 2021 -->
+      <rect x="155" y="115" width="45" height="85" fill="#0284c7" rx="2"/>
+      <text x="162" y="108" font-family="monospace" font-size="9" fill="#0369a1">4,152</text>
+      <text x="164" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">2021</text>
+
+      <!-- 2022 -->
+      <rect x="235" y="90" width="45" height="110" fill="#0284c7" rx="2"/>
+      <text x="242" y="83" font-family="monospace" font-size="9" fill="#0369a1">5,383</text>
+      <text x="244" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">2022</text>
+
+      <!-- 2024 -->
+      <rect x="315" y="90" width="45" height="110" fill="#0284c7" rx="2"/>
+      <text x="322" y="83" font-family="monospace" font-size="9" fill="#0369a1">5,383</text>
+      <text x="324" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">2024</text>
+
+      <!-- 2025 -->
+      <rect x="395" y="94" width="45" height="106" fill="#0284c7" rx="2"/>
+      <text x="402" y="87" font-family="monospace" font-size="9" fill="#0369a1">5,247</text>
+      <text x="404" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">2025</text>
+
+      <!-- Right Column: Status Badges -->
+      <g transform="translate(530, 0)">
+        <rect width="345" height="230" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+        <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">
+          🏷️ Actual Risk Status per Year
+        </text>
+
+        <!-- Badge Row 2020 -->
+        <g transform="translate(16, 40)">
+          <rect width="313" height="30" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="10" y="20" font-family="monospace" font-size="11" fill="#0f172a">2020: 4,152 mm (-45.1%)</text>
+          <rect x="205" y="5" width="98" height="20" rx="10" fill="#fee2e2"/>
+          <text x="216" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="700" fill="#b91c1c">DROUGHT-PRONE</text>
+        </g>
+
+        <!-- Badge Row 2022 -->
+        <g transform="translate(16, 76)">
+          <rect width="313" height="30" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="10" y="20" font-family="monospace" font-size="11" fill="#0f172a">2022: 5,383 mm (-28.8%)</text>
+          <rect x="205" y="5" width="98" height="20" rx="10" fill="#fee2e2"/>
+          <text x="216" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="700" fill="#b91c1c">DROUGHT-PRONE</text>
+        </g>
+
+        <!-- Badge Row 2024 -->
+        <g transform="translate(16, 112)">
+          <rect width="313" height="30" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="10" y="20" font-family="monospace" font-size="11" fill="#0f172a">2024: 5,383 mm (-28.8%)</text>
+          <rect x="205" y="5" width="98" height="20" rx="10" fill="#fee2e2"/>
+          <text x="216" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="700" fill="#b91c1c">DROUGHT-PRONE</text>
+        </g>
+
+        <!-- Badge Row 2025 -->
+        <g transform="translate(16, 148)">
+          <rect width="313" height="30" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="10" y="20" font-family="monospace" font-size="11" fill="#0f172a">2025: 5,247 mm (-30.6%)</text>
+          <rect x="205" y="5" width="98" height="20" rx="10" fill="#fee2e2"/>
+          <text x="216" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="700" fill="#b91c1c">DROUGHT-PRONE</text>
+        </g>
+
+        <text x="16" y="205" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">
+          *KSNDMC Deficit threshold is &le; -20.0% departure
+        </text>
+      </g>
+    </g>
+
+    <!-- Bottom Row: 2025 Model Inference + Probabilities (425px + 425px) -->
+    <g transform="translate(0, 452)">
+      <!-- Left Card: Model Prediction Output -->
+      <rect width="425" height="150" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">
+        🤖 Machine Learning Risk Assessment (2025)
+      </text>
+
+      <rect x="16" y="42" width="393" height="54" rx="4" fill="#fef2f2" stroke="#f87171"/>
+      <text x="28" y="62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#7f1d1d" text-transform="uppercase">
+        PREDICTED ZONE (RandomForestClassifier)
+      </text>
+      <text x="28" y="84" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#b91c1c">
+        Drought-Prone (Deficient Monsoon)
+      </text>
+
+      <text x="16" y="124" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#b45309" font-weight="500">
+        ⚠️ Caution: This is a model output with limited accuracy, see the Model Limits tab.
+      </text>
+
+      <!-- Right Card: Class Probability Distribution -->
+      <g transform="translate(450, 0)">
+        <rect width="425" height="150" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+        <text x="16" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">
+          📊 Class Probability Distribution
+        </text>
+
+        <!-- Prob 1: Drought -->
+        <text x="16" y="55" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">Drought-Prone</text>
+        <rect x="110" y="44" width="230" height="14" rx="3" fill="#fee2e2"/>
+        <rect x="110" y="44" width="147" height="14" rx="3" fill="#ef4444"/>
+        <text x="350" y="55" font-family="monospace" font-size="11" font-weight="700" fill="#b91c1c">64.03%</text>
+
+        <!-- Prob 2: Stable -->
+        <text x="16" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">Stable</text>
+        <rect x="110" y="74" width="230" height="14" rx="3" fill="#dcfce7"/>
+        <rect x="110" y="74" width="79" height="14" rx="3" fill="#22c55e"/>
+        <text x="350" y="85" font-family="monospace" font-size="11" font-weight="700" fill="#15803d">34.61%</text>
+
+        <!-- Prob 3: Flood -->
+        <text x="16" y="115" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">Flood-Prone</text>
+        <rect x="110" y="104" width="230" height="14" rx="3" fill="#e0f2fe"/>
+        <rect x="110" y="104" width="8" height="14" rx="3" fill="#0284c7"/>
+        <text x="350" y="115" font-family="monospace" font-size="11" font-weight="700" fill="#0369a1">1.36%</text>
+      </g>
+    </g>
+
+    <!-- Spatial Benchmark Bar (Hobli vs Taluk vs District) -->
+    <g transform="translate(0, 616)">
+      <rect width="875" height="80" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="16" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#1e293b">
+        Spatial Departure Benchmarks (2025 Season)
+      </text>
+
+      <g transform="translate(16, 36)">
+        <text x="0" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Station (Agumbe):</text>
+        <text x="120" y="20" font-family="monospace" font-size="14" font-weight="700" fill="#dc2626">-30.64%</text>
+
+        <text x="240" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">Taluk Mean (Tirthahalli):</text>
+        <text x="390" y="20" font-family="monospace" font-size="14" font-weight="700" fill="#0284c7">+1.93%</text>
+
+        <text x="520" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b">District Mean (Shivamogga):</text>
+        <text x="690" y="20" font-family="monospace" font-size="14" font-weight="700" fill="#475569">-3.44%</text>
+      </g>
+    </g>
+  </g>
+</svg>

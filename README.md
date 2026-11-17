@@ -1,23 +1,96 @@
-# Hobli-Level Rainfall Deviation and Drought-Risk Prediction for Karnataka Using Machine Learning
+<div align="center">
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-FF4B4B.svg)](https://streamlit.io/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3+-F7931E.svg)](https://scikit-learn.org/)
-[![License: ODC-BY](https://img.shields.io/badge/License-ODC--BY-green.svg)](https://opendatacommons.org/licenses/by/)
+<a href="https://varuna-ml.streamlit.app/">
+  <img src="docs/images/app_banner.svg" alt="Varuna Project Banner" width="100%" />
+</a>
+
+<br/><br/>
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://varuna-ml.streamlit.app/)
+[![Live App URL](https://img.shields.io/badge/Live_Deployment-varuna--ml.streamlit.app-0284c7?style=for-the-badge&logo=streamlit)](https://varuna-ml.streamlit.app/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3+-f7931e.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![License: ODC-BY](https://img.shields.io/badge/License-ODC--BY-10b981.svg?style=for-the-badge)](https://opendatacommons.org/licenses/by/)
+
+<br/>
+
+### **[👉 Click Here to Launch the Live Web Application: varuna-ml.streamlit.app 👈](https://varuna-ml.streamlit.app/)**
+
+*Official KSNDMC Karnataka Hobli-Level Rainfall Deviation and Drought-Risk Analytics Platform*
 
 ---
 
-## 📌 Problem Statement
+</div>
 
-In Karnataka, the **hobli** (a sub-taluk revenue circle comprising 10 to 30 agricultural villages) serves as the fundamental administrative unit for ground-level governance, official drought declarations, state disaster relief funding, and Pradhan Mantri Fasal Bima Yojana (PMFBY) crop insurance payouts. While state and district-level monsoon forecasts mask severe micro-climatic rainfall deficits, predicting hyper-local annual rainfall departure and drought risk across 850+ hoblis is severely impeded by unstandardized, noisy open-government records and extreme class imbalance. This project develops an end-to-end, reproducible machine learning pipeline that harmonizes multi-year rainfall observations, engineers strict temporal-leakage-free features, evaluates spatial and out-of-time generalizability against honest baseline benchmarks, and delivers an interactive Streamlit decision-support application for rural disaster monitoring.
+## 📌 Executive Summary & Problem Statement
+
+In Karnataka, the **hobli** (a sub-taluk revenue circle comprising 10 to 30 agricultural villages) serves as the legal administrative tier for official disaster declarations, state emergency relief funding, and Pradhan Mantri Fasal Bima Yojana (PMFBY) crop insurance compensations. Over 70% of Karnataka's agricultural acreage is rainfed, ranking it second in India for drought vulnerability.
+
+While synoptic state and district-level forecasts mask extreme micro-climatic rain shadows, predicting localized annual rainfall departures across **850+ hoblis** is severely obstructed by unstandardized, noisy open-government records and extreme class imbalance. 
+
+**Project Varuna** delivers an end-to-end, scientifically validated machine learning system that:
+1. Harmonizes 5 years of fragmented KSNDMC rainfall records (**2020, 2021, 2022, 2024, 2025; 4,250 observations**).
+2. Engineers strict *ex-ante*, leakage-free temporal features while explicitly parameterizing the missing calendar year 2023 (`gap_years = 2`).
+3. Evaluates spatial generalization via **5-Fold District-Grouped Cross-Validation** (`GroupKFold` across 31 districts) and an **out-of-time stress test on 2025**.
+4. Benchmarks machine learning models against honest **Majority-Class** and **Persistence** baselines.
+5. Deploys an interactive, open-access decision-support application hosted on Streamlit Cloud at **[varuna-ml.streamlit.app](https://varuna-ml.streamlit.app/)**.
+
+---
+
+## 📸 Interactive Web Application Screenshots
+
+The deployed Streamlit application at **[varuna-ml.streamlit.app](https://varuna-ml.streamlit.app/)** is organized into 5 specialized analytical modules:
+
+### 1. Tab 1: Hobli Station Report & Live Risk Assessment
+> *Live station trajectory, suspect normal warning banners, historical actual vs. normal rainfall comparisons, and 2025 model inference with calibrated class probabilities.*
+
+<div align="center">
+  <a href="https://varuna-ml.streamlit.app/">
+    <img src="docs/images/screenshot_tab1_hobli_report.svg" alt="Tab 1: Hobli Station Report" width="100%" />
+  </a>
+</div>
+
+<br/>
+
+### 2. Tab 2: Climatological Risk Zones & Clustering ($k=4$)
+> *Longitudinal K-Means clustering aggregated to one vector per station across five years ($k=4$, silhouette score 0.3406), identifying 123 chronic deficit-vulnerable hoblis.*
+
+<div align="center">
+  <a href="https://varuna-ml.streamlit.app/">
+    <img src="docs/images/screenshot_tab2_risk_zones.svg" alt="Tab 2: Risk Zones & Clustering" width="100%" />
+  </a>
+</div>
+
+<br/>
+
+### 3. Tab 3: Macro-Climatic Spatial Heatmap (No Fabricated Coordinates)
+> *Because raw KSNDMC records contain no latitude/longitude coordinates, coordinates were NOT fabricated. An interactive 31-District Departure Heatmap replaces coarse spatial maps.*
+
+<div align="center">
+  <a href="https://varuna-ml.streamlit.app/">
+    <img src="docs/images/screenshot_tab3_district_heatmap.svg" alt="Tab 3: District Departure Heatmap" width="100%" />
+  </a>
+</div>
+
+<br/>
+
+### 4. Tab 5: Model Limits & Honest Baseline Comparisons
+> *Transparent empirical results showing that while the majority baseline achieves 79.65% accuracy by guessing "stable" everywhere (0% drought recall), Random Forest detects localized moisture stress.*
+
+<div align="center">
+  <a href="https://varuna-ml.streamlit.app/">
+    <img src="docs/images/screenshot_tab5_model_limits.svg" alt="Tab 5: Model Limits and Baselines" width="100%" />
+  </a>
+</div>
 
 ---
 
 ## ⚠️ Why the Data Is Hard (Data Quality Challenges)
 
 Real-world meteorological data from state monitoring centres is rife with administrative inconsistencies and artifacts:
+
 1. **Mislabeled Raw Tables**: Raw government CSVs contained swapped calendar years (e.g., `rainfall_2022.csv` was mislabeled as 2023, and `rainfall_2024.csv` was mislabeled as 2020). Correct temporal mappings were established via OpenCity metadata and KSNDMC official table verification.
-2. **Missing Year 2023**: KSNDMC published no hobli-level annual tables for calendar year 2023. This non-consecutive temporal jump is explicitly parameterized via a `gap_years = 2` feature (between 2022 and 2024).
+2. **Missing Calendar Year 2023**: KSNDMC published no hobli-level annual tables for calendar year 2023. This non-consecutive temporal jump is explicitly parameterized via a `gap_years = 2` feature (between 2022 and 2024).
 3. **Hierarchical Formatting & Duplicates**: Raw files totaled 5,636 rows with embedded District (`D`) and Taluk (`T`) summary rows interleaved with station records. Raw 2020 contained a duplicate printed block of 27 Chitradurga rows (indices 263–289) that had to be dropped.
 4. **Nomenclature & Boundary Shifts**: 898 raw station name variants existed across files due to spelling mutations and Kannada-to-English phonetic transliterations. Furthermore, the late-2021 bifurcation of Vijayanagar from Ballari shifted 6 taluks across district boundaries.
 5. **Artificial Baseline Normals (Suspect Normals)**: **338 hoblis** exhibit unchanged static normals alongside persistent one-sided departures. Most critically, **Agumbe** in Shivamogga is assigned a normal of **7,565.0 mm**; even when receiving a massive **5,383.1 mm** of rainfall in 2024, it is mechanically flagged as "drought-prone" (-28.84% departure) due to an uncalibrated historical benchmark.
@@ -79,6 +152,7 @@ Real-world meteorological data from state monitoring centres is rife with admini
 |  - Climatological cluster explorer & filterable chronic-deficit registry          |
 |  - District departure heatmap replacing spatial map without coordinates           |
 |  - Full transparency on data quality and machine learning model limits            |
+|  - Deployed publicly on Streamlit Cloud: https://varuna-ml.streamlit.app/        |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -89,6 +163,8 @@ Real-world meteorological data from state monitoring centres is rife with admini
 ```
 ml-project/
 ├── .gitignore
+├── .streamlit/
+│   └── config.toml                    # Production theme and server configuration
 ├── README.md                          # Project documentation and reproduction guide
 ├── requirements.txt                   # Production Python dependencies
 ├── app/
@@ -103,6 +179,12 @@ ml-project/
 │       ├── hobli_clusters.csv         # Exported k=4 climatological cluster profiles
 │       └── README.md                  # Comprehensive feature dictionary and target contracts
 ├── docs/
+│   ├── images/                        # High-resolution SVG banners and UI screenshots
+│   │   ├── app_banner.svg             # Main project header banner
+│   │   ├── screenshot_tab1_hobli_report.svg
+│   │   ├── screenshot_tab2_risk_zones.svg
+│   │   ├── screenshot_tab3_district_heatmap.svg
+│   │   └── screenshot_tab5_model_limits.svg
 │   ├── presentation_outline.md        # 10-slide presentation deck with speaker notes
 │   └── viva_qa.md                     # 20 rigorous examiner viva Q&A responses
 ├── models/
@@ -128,23 +210,31 @@ ml-project/
 │   ├── audit_name_merges.py           # Cross-station suffix and boundary audit script
 │   ├── refresh_eda.py                 # Automated EDA notebook recreation runner
 │   └── smoke_test_app.py              # Automated 3-station headless application smoke test
-└── src/
-    ├── clean_data.py                  # Stage 1 extraction, parsing, and harmonization
-    ├── export_cluster_labels.py       # Cluster assignment exporter generating hobli_clusters.csv
-    ├── features.py                    # Stage 2 temporal feature engineering pipeline
-    ├── predict_risk.py                # Production inference module with strict schema validation
-    └── train_models.py                # Stage 3 cross-validation and model training pipeline
+├── src/
+│   ├── clean_data.py                  # Stage 1 extraction, parsing, and harmonization
+│   ├── export_cluster_labels.py       # Cluster assignment exporter generating hobli_clusters.csv
+│   ├── features.py                    # Stage 2 temporal feature engineering pipeline
+│   ├── predict_risk.py                # Production inference module with strict schema validation
+│   └── train_models.py                # Stage 3 cross-validation and model training pipeline
+└── website/                           # Bespoke production web portal (Anti-vibe-coding)
+    ├── index.html                     # Semantic HTML5 portal with all 20 UI enhancements
+    ├── styles.css                     # Editorial stylesheet, print layout, dark mode tokens
+    └── app.js                         # Zero-dependency client-side search and filtering
 ```
 
 ---
 
 ## 🚀 How to Run the Project (Step-by-Step)
 
-### 1. Environment Setup
+### 1. Live Web Application
+Launch the deployed application immediately without local setup:  
+👉 **[https://varuna-ml.streamlit.app/](https://varuna-ml.streamlit.app/)**
+
+### 2. Local Setup & Execution
 ```bash
+# Clone the repository
 git clone https://github.com/pranavhm25/varuna.git
 cd varuna
-git checkout app
 
 # Create and activate virtual environment
 python -m venv venv
@@ -157,8 +247,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Stage-by-Stage Execution in Order
-
+### 3. Stage-by-Stage Execution in Order
 ```bash
 # Stage 1: Clean raw KSNDMC files and harmonize station nomenclature
 python src/clean_data.py
@@ -177,13 +266,10 @@ python src/predict_risk.py
 
 # Run Headless Application Smoke Test
 python scripts/smoke_test_app.py
-```
 
-### 3. Launching the Streamlit Web Application
-```bash
+# Launch Local Streamlit Application
 streamlit run app/app.py
 ```
-*The app will automatically launch in your default web browser at `http://localhost:8501`.*
 
 ---
 
@@ -246,6 +332,6 @@ This project was developed collaboratively as a 4-person academic machine learni
 
 - **Person 4 (Application Engineering, System Integration, Documentation & Defense Preparation)**:
   - Streamlit web application development (`app/app.py`), cluster labels export (`src/export_cluster_labels.py`), and headless smoke testing (`scripts/smoke_test_app.py`).
+  - Production deployment to Streamlit Community Cloud at **[varuna-ml.streamlit.app](https://varuna-ml.streamlit.app/)**.
   - System integration, dependencies specification (`requirements.txt`), and comprehensive documentation (`README.md`).
   - Final academic report (`reports/final_report.md`), 10-slide presentation deck (`docs/presentation_outline.md`), and 20 viva examination defense responses (`docs/viva_qa.md`).
-

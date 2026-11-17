@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" height="auto">
+  <defs>
+    <linearGradient id="bannerBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="60%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+    </linearGradient>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="420" fill="url(#bannerBg)" rx="12"/>
+  <rect x="0" y="416" width="1200" height="4" fill="url(#accentLine)"/>
+
+  <!-- Subtle Blueprint Topography Lines -->
+  <g stroke="#334155" stroke-width="1" opacity="0.35" fill="none">
+    <path d="M0,180 Q300,120 600,190 T1200,140" />
+    <path d="M0,240 Q400,320 800,210 T1200,260" />
+    <path d="M0,90 Q500,60 900,110 T1200,80" />
+  </g>
+
+  <!-- Live Deployment Badge -->
+  <g transform="translate(60, 48)">
+    <rect width="210" height="32" rx="6" fill="#0369a1" fill-opacity="0.3" stroke="#38bdf8" stroke-width="1.2"/>
+    <circle cx="18" cy="16" r="4.5" fill="#38bdf8">
+      <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="32" y="21" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#e0f2fe" letter-spacing="0.5">LIVE PRODUCTION APP</text>
+  </g>
+
+  <!-- Main Title & Academic Context -->
+  <text x="60" y="132" font-family="'Newsreader', Georgia, serif" font-size="44" font-weight="700" fill="#f8fafc" letter-spacing="-0.5">
+    Project Varuna
+  </text>
+  <text x="60" y="168" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400" fill="#94a3b8">
+    Hobli-Level Rainfall Deviation &amp; Drought-Risk Prediction for Karnataka Using Machine Learning
+  </text>
+  <text x="60" y="196" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="400" fill="#cbd5e1" opacity="0.85">
+    Karnataka State Natural Disaster Monitoring Centre (KSNDMC) &bull; Longitudinal Panel: 2020–2025 &bull; 850 Canonical Stations
+  </text>
+
+  <!-- Primary Live Link Button Box -->
+  <g transform="translate(60, 230)">
+    <rect width="320" height="46" rx="6" fill="#0284c7" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="24" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="600" fill="#ffffff">
+      Launch App &bull; varuna-ml.streamlit.app &rarr;
+    </text>
+  </g>
+
+  <!-- GitHub / Source Tag -->
+  <g transform="translate(398, 230)">
+    <rect width="180" height="46" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <text x="24" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="500" fill="#cbd5e1">
+      5-Stage Pipeline
+    </text>
+  </g>
+
+  <!-- Live Stats KPI Cards Grid -->
+  <g transform="translate(60, 310)">
+    <!-- KPI 1 -->
+    <g transform="translate(0, 0)">
+      <rect width="250" height="74" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="18" y="32" font-family="monospace" font-size="24" font-weight="700" fill="#38bdf8">4,250</text>
+      <text x="18" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8">Clean Station Records (5 Yrs)</text>
+    </g>
+
+    <!-- KPI 2 -->
+    <g transform="translate(270, 0)">
+      <rect width="250" height="74" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="18" y="32" font-family="monospace" font-size="24" font-weight="700" fill="#4ade80">0.4077 F1</text>
+      <text x="18" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8">Hold-Out Random Forest</text>
+    </g>
+
+    <!-- KPI 3 -->
+    <g transform="translate(540, 0)">
+      <rect width="250" height="74" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="18" y="32" font-family="monospace" font-size="24" font-weight="700" fill="#facc15">21.65% MAE</text>
+      <text x="18" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8">Zero Baseline Climatology</text>
+    </g>
+
+    <!-- KPI 4 -->
+    <g transform="translate(810, 0)">
+      <rect width="270" height="74" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="18" y="32" font-family="monospace" font-size="24" font-weight="700" fill="#f43f5e">338 Stations</text>
+      <text x="18" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8">Suspect Normal Data Artifacts</text>
+    </g>
+  </g>
+</svg>
