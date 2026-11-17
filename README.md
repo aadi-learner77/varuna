@@ -1,7 +1,7 @@
 <div align="center">
 
 <a href="https://varuna-ml.streamlit.app/">
-  <img src="docs/images/app_banner.svg" alt="Varuna Project Banner" width="100%" />
+  <img src="docs/images/app_banner.png" alt="Varuna Project Banner" width="100%" />
 </a>
 
 <br/><br/>
@@ -46,7 +46,7 @@ The deployed Streamlit application at **[varuna-ml.streamlit.app](https://varuna
 
 <div align="center">
   <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab1_hobli_report.svg" alt="Tab 1: Hobli Station Report" width="100%" />
+    <img src="docs/images/screenshot_tab1_hobli_report.png" alt="Tab 1: Hobli Station Report" width="100%" />
   </a>
 </div>
 
@@ -57,7 +57,7 @@ The deployed Streamlit application at **[varuna-ml.streamlit.app](https://varuna
 
 <div align="center">
   <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab2_risk_zones.svg" alt="Tab 2: Risk Zones & Clustering" width="100%" />
+    <img src="docs/images/screenshot_tab2_risk_zones.png" alt="Tab 2: Risk Zones & Clustering" width="100%" />
   </a>
 </div>
 
@@ -68,18 +68,29 @@ The deployed Streamlit application at **[varuna-ml.streamlit.app](https://varuna
 
 <div align="center">
   <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab3_district_heatmap.svg" alt="Tab 3: District Departure Heatmap" width="100%" />
+    <img src="docs/images/screenshot_tab3_district_heatmap.png" alt="Tab 3: District Departure Heatmap" width="100%" />
   </a>
 </div>
 
 <br/>
 
-### 4. Tab 5: Model Limits & Honest Baseline Comparisons
+### 4. Tab 4: Data Quality & Normalization Audit
+> *Raw vs. clean pipeline reduction metrics (5,636 raw records down to 4,250 clean station-years), duplicate block resolution, and suspect normal catalogs.*
+
+<div align="center">
+  <a href="https://varuna-ml.streamlit.app/">
+    <img src="docs/images/screenshot_tab4_data_quality.png" alt="Tab 4: Data Quality Audit" width="100%" />
+  </a>
+</div>
+
+<br/>
+
+### 5. Tab 5: Model Limits & Honest Baseline Comparisons
 > *Transparent empirical results showing that while the majority baseline achieves 79.65% accuracy by guessing "stable" everywhere (0% drought recall), Random Forest detects localized moisture stress.*
 
 <div align="center">
   <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab5_model_limits.svg" alt="Tab 5: Model Limits and Baselines" width="100%" />
+    <img src="docs/images/screenshot_tab5_model_limits.png" alt="Tab 5: Model Limits and Baselines" width="100%" />
   </a>
 </div>
 
