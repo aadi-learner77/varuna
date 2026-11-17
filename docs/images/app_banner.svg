@@ -48,14 +48,14 @@
 
   <!-- Primary Live Link Button Box -->
   <g transform="translate(60, 230)">
-    <rect width="320" height="46" rx="6" fill="#0284c7" stroke="#38bdf8" stroke-width="1.2"/>
-    <text x="24" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="600" fill="#ffffff">
+    <rect width="360" height="46" rx="6" fill="#0284c7" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="24" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#ffffff">
       Launch App &bull; varuna-ml.streamlit.app &rarr;
     </text>
   </g>
 
   <!-- GitHub / Source Tag -->
-  <g transform="translate(398, 230)">
+  <g transform="translate(438, 230)">
     <rect width="180" height="46" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
     <text x="24" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="500" fill="#cbd5e1">
       5-Stage Pipeline
