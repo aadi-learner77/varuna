@@ -166,3 +166,4 @@
 
 ### Speaker Notes (40 seconds):
 > "In conclusion, our project demonstrates both the power and the boundaries of applied machine learning in rural meteorology. Our key limitations are having only five non-consecutive years without 2023, relying solely on surface rainfall without soil moisture, and the absence of geographic coordinates. In future work, we plan to ingest GIS boundary shapefiles for true spatial mapping, incorporate satellite vegetation indices like NDVI, and collaborate with KSNDMC to recalibrate historical normals. We believe transparently communicating baseline comparisons and data limitations is essential for responsible AI deployment. Thank you, and we welcome your questions."
+

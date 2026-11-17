@@ -139,3 +139,4 @@ Balanced Logistic Regression suffered from severe class-weight distortion. In th
 1. **Multivariate Meteorological Ingestion**: Incorporate temperature, potential evapotranspiration (PET), and ERA5 soil moisture indices, moving from rainfall-only metrics to Standardized Precipitation-Evapotranspiration Index (SPEI).
 2. **GIS Boundary Polygon Integration**: Ingest Survey of India hobli shapefiles to enable true interactive spatial choropleth mapping and spatial-lag econometric modeling.
 3. **Collaboration with KSNDMC**: Work with state disaster authorities to recalibrate static baseline normals (correcting anomalies like Agumbe) and digitize pre-2020 and missing 2023 records.
+
