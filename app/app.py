@@ -34,6 +34,11 @@ except ImportError as e:
     predict_risk = None
     _import_err = e
 
+try:
+    from src.predict_future import predict_future_for_station
+except ImportError as e:
+    predict_future_for_station = None
+
 # ------------------------------------------------------------------------------
 # PAGE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -75,10 +80,16 @@ def load_datasets():
     df_suspect = pd.read_csv(suspect_path)
     df_results = pd.read_csv(results_path)
 
-    return df_clean, df_feat, df_clusters, df_suspect, df_results
+    future_path = DATA_DIR / "features" / "future_projections_2026_2027.csv"
+    if future_path.exists():
+        df_future = pd.read_csv(future_path)
+    else:
+        df_future = pd.DataFrame()
+
+    return df_clean, df_feat, df_clusters, df_suspect, df_results, df_future
 
 
-df_clean, df_feat, df_clusters, df_suspect, df_results = load_datasets()
+df_clean, df_feat, df_clusters, df_suspect, df_results, df_future = load_datasets()
 
 # Pre-calculate suspect hoblis set for fast O(1) lookup
 suspect_keys = set(zip(df_suspect["district"], df_suspect["taluk"], df_suspect["hobli"]))
@@ -131,8 +142,9 @@ st.markdown(
 # ------------------------------------------------------------------------------
 # TABS SETUP
 # ------------------------------------------------------------------------------
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab_future, tab2, tab3, tab4, tab5 = st.tabs([
     "📍 Hobli Report",
+    "🔮 Future Projections (2026–2027)",
     "🌐 Climatological Risk Zones",
     "🗺️ District Trends (Spatial Heatmap)",
     "🔍 Data Quality Audit",
@@ -377,7 +389,202 @@ with tab1:
         st.info("2025 observation not found for comparison.")
 
 # ==============================================================================
-# TAB 2: RISK ZONES & CLUSTERING
+# TAB 2: FUTURE PROJECTIONS (2026–2027)
+# ==============================================================================
+with tab_future:
+    st.header(f"🔮 Predictive Forecast: {selected_hobli} ({selected_taluk}, {selected_district})")
+    st.markdown(
+        "Multi-step autoregressive machine learning forecast estimating expected cumulative monsoon rainfall (**mm**), "
+        "percentage departure (**%**), and probabilistic risk zone classifications for **2026** and **2027**."
+    )
+
+    # Retrieve future projections
+    st_future = pd.DataFrame()
+    if len(df_future) > 0:
+        st_future = df_future[
+            (df_future["district"] == selected_district) &
+            (df_future["taluk"] == selected_taluk) &
+            (df_future["hobli"] == selected_hobli)
+        ].sort_values("year")
+
+    if len(st_future) == 0 and predict_future_for_station is not None:
+        try:
+            preds = predict_future_for_station(df_clean, selected_district, selected_taluk, selected_hobli, [2026, 2027])
+            st_future = pd.DataFrame(preds).sort_values("year")
+        except Exception as e:
+            st.error(f"Error computing live projection: {e}")
+
+    if len(st_future) > 0:
+        # Forecast Cards
+        col_f26, col_f27 = st.columns(2)
+
+        p26 = st_future[st_future["year"] == 2026].iloc[0] if (st_future["year"] == 2026).any() else None
+        p27 = st_future[st_future["year"] == 2027].iloc[0] if (st_future["year"] == 2027).any() else None
+
+        for col, p_row, yr, margin in [(col_f26, p26, 2026, "±24.4%"), (col_f27, p27, 2027, "±32.9%")]:
+            with col:
+                if p_row is not None:
+                    pred_act = p_row["predicted_actual_mm"]
+                    norm = p_row["normal_mm"]
+                    dep = p_row["predicted_departure_pct"]
+                    low_act = p_row["lower_actual_mm"]
+                    high_act = p_row["upper_actual_mm"]
+                    zone = p_row["risk_zone"]
+
+                    badge_color = "#198754" if zone == "stable" else ("#dc3545" if zone == "drought_prone" else "#0d6efd")
+                    zone_title = "Stable" if zone == "stable" else ("Drought-Prone" if zone == "drought_prone" else "Flood-Prone")
+
+                    st.markdown(
+                        f"""
+                        <div style='background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);'>
+                            <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;'>
+                                <h3 style='margin: 0; color: #1e293b;'>🗓️ Calendar Year {yr} Forecast</h3>
+                                <span style='background-color: {badge_color}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;'>{zone_title}</span>
+                            </div>
+                            <div style='font-size: 1.9em; font-weight: 700; color: #0284c7;'>{pred_act:.1f} mm</div>
+                            <div style='color: #64748b; font-size: 0.9em; margin-bottom: 8px;'>Normal Baseline: <strong>{norm:.1f} mm</strong> | Departure: <strong style='color: {'#dc3545' if dep < 0 else '#0284c7'};'>{dep:+.1f}%</strong></div>
+                            <div style='background-color: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 0.85em; color: #334155;'>
+                                <strong>Uncertainty Band ({margin}):</strong><br/>
+                                Rainfall: {low_act:.1f} mm – {high_act:.1f} mm
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
+                    # Probabilities Bar
+                    p_drought = p_row.get("prob_drought_prone", 0.0)
+                    p_stable = p_row.get("prob_stable", 0.0)
+                    p_flood = p_row.get("prob_flood_prone", 0.0)
+
+                    fig_p = go.Figure()
+                    fig_p.add_trace(go.Bar(name="Drought", y=["Risk"], x=[p_drought], orientation="h", marker_color="#dc3545", text=f"{p_drought*100:.0f}%", textposition="auto"))
+                    fig_p.add_trace(go.Bar(name="Stable", y=["Risk"], x=[p_stable], orientation="h", marker_color="#198754", text=f"{p_stable*100:.0f}%", textposition="auto"))
+                    fig_p.add_trace(go.Bar(name="Flood", y=["Risk"], x=[p_flood], orientation="h", marker_color="#0d6efd", text=f"{p_flood*100:.0f}%", textposition="auto"))
+                    fig_p.update_layout(
+                        barmode="stack",
+                        height=90,
+                        margin=dict(l=0, r=0, t=10, b=0),
+                        xaxis=dict(showgrid=False, showticklabels=False, range=[0, 1]),
+                        yaxis=dict(showticklabels=False),
+                        showlegend=False
+                    )
+                    st.plotly_chart(fig_p, use_container_width=True)
+
+        st.markdown("---")
+
+        # Longitudinal Forecast Chart
+        st.subheader("📈 Observed History & Future Trajectory (2020–2027)")
+        
+        station_clean = df_clean[
+            (df_clean["district"] == selected_district) &
+            (df_clean["taluk"] == selected_taluk) &
+            (df_clean["hobli"] == selected_hobli)
+        ].sort_values("year")
+
+        if len(station_clean) > 0:
+            hist_years = station_clean["year"].tolist()
+            hist_act = station_clean["actual_mm"].tolist()
+            normal_val = station_clean["normal_mm"].iloc[-1]
+
+            # Connecting bridge: from last observed (2025) to future (2026, 2027)
+            fut_years = [hist_years[-1]] + st_future["year"].tolist()
+            fut_act = [hist_act[-1]] + st_future["predicted_actual_mm"].tolist()
+            fut_lower = [hist_act[-1]] + st_future["lower_actual_mm"].tolist()
+            fut_upper = [hist_act[-1]] + st_future["upper_actual_mm"].tolist()
+
+            fig_traj = go.Figure()
+
+            # Normal Baseline
+            all_years = sorted(list(set(hist_years + st_future["year"].tolist())))
+            fig_traj.add_trace(go.Scatter(
+                x=all_years,
+                y=[normal_val] * len(all_years),
+                mode="lines",
+                name=f"Normal Baseline ({normal_val:.1f} mm)",
+                line=dict(color="#94a3b8", dash="dash", width=2)
+            ))
+
+            # Uncertainty Band Shading
+            fig_traj.add_trace(go.Scatter(
+                x=fut_years + fut_years[::-1],
+                y=fut_upper + fut_lower[::-1],
+                fill="toself",
+                fillcolor="rgba(2, 132, 199, 0.15)",
+                line=dict(color="rgba(255,255,255,0)"),
+                hoverinfo="skip",
+                showlegend=True,
+                name="Confidence Range (MAE Bounds)"
+            ))
+
+            # Historical Observed Line
+            fig_traj.add_trace(go.Scatter(
+                x=hist_years,
+                y=hist_act,
+                mode="lines+markers",
+                name="Observed Rainfall (KSNDMC)",
+                line=dict(color="#0f172a", width=3),
+                marker=dict(size=8, color="#0f172a")
+            ))
+
+            # Predicted Future Line
+            fig_traj.add_trace(go.Scatter(
+                x=fut_years,
+                y=fut_act,
+                mode="lines+markers",
+                name="Forecasted Projections",
+                line=dict(color="#0284c7", width=3, dash="dot"),
+                marker=dict(size=10, symbol="diamond", color="#0284c7")
+            ))
+
+            fig_traj.update_layout(
+                xaxis=dict(title="Year", tickmode="array", tickvals=all_years),
+                yaxis=dict(title="Rainfall (mm)"),
+                margin=dict(l=20, r=20, t=30, b=20),
+                height=380,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_traj, use_container_width=True)
+
+        # Surrounding Taluk Forecast Summary
+        st.subheader(f"🗺️ 2026 Projections Across {selected_taluk} Taluk")
+        if len(df_future) > 0:
+            taluk_future = df_future[
+                (df_future["district"] == selected_district) &
+                (df_future["taluk"] == selected_taluk) &
+                (df_future["year"] == 2026)
+            ][["hobli", "normal_mm", "predicted_actual_mm", "predicted_departure_pct", "risk_zone"]].sort_values("predicted_departure_pct")
+
+            if len(taluk_future) > 0:
+                st.dataframe(
+                    taluk_future.rename(columns={
+                        "hobli": "Hobli Station",
+                        "normal_mm": "Normal (mm)",
+                        "predicted_actual_mm": "Predicted 2026 (mm)",
+                        "predicted_departure_pct": "Predicted Departure (%)",
+                        "risk_zone": "Risk Zone"
+                    }).style.format({
+                        "Normal (mm)": "{:.1f}",
+                        "Predicted 2026 (mm)": "{:.1f}",
+                        "Predicted Departure (%)": "{:+.1f}%"
+                    }),
+                    use_container_width=True,
+                    hide_index=True
+                )
+
+        # Scientific Guidance & Disclaimers
+        st.info(
+            "ℹ️ **Climatological & Operational Guidance**: "
+            "These projections are produced by an autoregressive machine learning regressor and calibrated random forest classifier. "
+            "Indian monsoon precipitation is driven by dynamic global teleconnections (**ENSO, IOD, MJO**) that cannot be deterministically "
+            "modeled multiple years in advance with statistical rainfall logs alone. The provided uncertainty margins "
+            "(±24.4% in 2026, widening to ±32.9% in 2027) should be factored into disaster mitigation and agrarian contingency planning."
+        )
+    else:
+        st.warning("No projection data available for the selected station.")
+
+# ==============================================================================
+# TAB 3: RISK ZONES & CLUSTERING
 # ==============================================================================
 with tab2:
     st.header("🌐 Climatological Hobli Clustering (K-Means k=4)")
