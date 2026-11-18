@@ -95,13 +95,121 @@ df_clean, df_feat, df_clusters, df_suspect, df_results, df_future = load_dataset
 suspect_keys = set(zip(df_suspect["district"], df_suspect["taluk"], df_suspect["hobli"]))
 
 # ------------------------------------------------------------------------------
+# PLOTLY & UI HELPERS
+# ------------------------------------------------------------------------------
+def plot_departure_gauge(dep_val: float, title: str = "Rainfall Departure (%)") -> go.Figure:
+    """Render an intuitive radial speedometer gauge for rainfall departure."""
+    bar_color = "#10b981" if (-20.0 <= dep_val <= 40.0) else ("#ef4444" if dep_val < -20.0 else "#0284c7")
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=dep_val,
+        number={"suffix": "%", "valueformat": "+.1f", "font": {"size": 24, "color": "#0f172a"}},
+        title={"text": title, "font": {"size": 13, "color": "#64748b"}},
+        gauge={
+            "axis": {
+                "range": [-100, 100],
+                "tickwidth": 1,
+                "tickcolor": "#94a3b8",
+                "tickvals": [-60, -20, 0, 40, 80],
+                "ticktext": ["-60%", "-20%", "0%", "+40%", "+80%"]
+            },
+            "bar": {"color": bar_color, "thickness": 0.28},
+            "bgcolor": "rgba(241, 245, 249, 0.6)",
+            "borderwidth": 0,
+            "steps": [
+                {"range": [-100, -20], "color": "rgba(239, 68, 68, 0.20)"},  # Deficit / Drought
+                {"range": [-20, 40], "color": "rgba(16, 185, 129, 0.20)"},   # Normal / Stable
+                {"range": [40, 100], "color": "rgba(2, 132, 199, 0.20)"}     # Excess / Flood
+            ],
+            "threshold": {
+                "line": {"color": "#0f172a", "width": 3},
+                "thickness": 0.75,
+                "value": dep_val
+            }
+        }
+    ))
+    fig.update_layout(
+        height=170,
+        margin=dict(l=15, r=15, t=30, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        font={"family": "sans-serif"}
+    )
+    return fig
+
+# ------------------------------------------------------------------------------
+# MODERN CUSTOM CSS DESIGN SYSTEM
+# ------------------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* Metric KPI Cards */
+    .kpi-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px 18px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-bottom: 12px;
+        min-height: 105px;
+    }
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    }
+    .kpi-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+    .kpi-sub {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    /* Tabs Elevation */
+    div[data-testid="stTabs"] button[role="tab"] {
+        border-radius: 20px !important;
+        padding: 8px 18px !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        transition: all 0.2s ease !important;
+        margin-right: 6px !important;
+    }
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+        background-color: #0284c7 !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3) !important;
+    }
+
+    /* Table & Container Polish */
+    .stDataFrame {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ------------------------------------------------------------------------------
 # SIDEBAR NAVIGATION & DEPENDENT DROPDOWNS
 # ------------------------------------------------------------------------------
 st.sidebar.title("🌧️ Karnataka Rainfall")
 st.sidebar.caption("Hobli-Level Drought-Risk & Deviation Predictor")
 st.sidebar.markdown("---")
 
-st.sidebar.subheader("Select Station")
+st.sidebar.subheader("📍 Select Station")
 
 # 1. District selection
 district_list = sorted(df_clean["district"].unique())
@@ -119,6 +227,46 @@ hobli_sub = df_clean[
 hobli_list = sorted(hobli_sub["hobli"].unique())
 selected_hobli = st.sidebar.selectbox("Hobli (Station)", hobli_list, index=0)
 
+# Sidebar: Station Profile Card
+st_side_hist = df_clean[
+    (df_clean["district"] == selected_district) &
+    (df_clean["taluk"] == selected_taluk) &
+    (df_clean["hobli"] == selected_hobli)
+].sort_values("year")
+
+if len(st_side_hist) > 0:
+    last_r = st_side_hist.iloc[-1]
+    l_dep = last_r["departure_pct"]
+    l_yr = int(last_r["year"])
+    b_col = "#10b981" if (-20.0 <= l_dep <= 40.0) else ("#ef4444" if l_dep < -20.0 else "#0284c7")
+    b_txt = "Stable" if (-20.0 <= l_dep <= 40.0) else ("Deficit" if l_dep < -20.0 else "Excess")
+
+    st_c = df_clusters[
+        (df_clusters["district"] == selected_district) &
+        (df_clusters["taluk"] == selected_taluk) &
+        (df_clusters["hobli"] == selected_hobli)
+    ]
+    c_desc_short = st_c.iloc[0]["cluster_name"] if len(st_c) > 0 else "Semi-Arid Plain"
+
+    st.sidebar.markdown(
+        f"""
+        <div style='background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; margin: 12px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.04);'>
+            <div style='font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;'>Station at a Glance</div>
+            <div style='font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 2px 0;'>{selected_hobli}</div>
+            <div style='font-size: 0.82rem; color: #475569;'>Normal: <strong>{last_r["normal_mm"]:.1f} mm</strong></div>
+            <div style='font-size: 0.82rem; color: #475569;'>{l_yr} Rainfall: <strong>{last_r["actual_mm"]:.1f} mm</strong></div>
+            <div style='margin-top: 8px; display: flex; justify-content: space-between; align-items: center;'>
+                <span style='font-size: 0.82rem; font-weight: 700; color: {"#ef4444" if l_dep < 0 else "#0284c7"};'>{l_dep:+.1f}% Dep</span>
+                <span style='background-color: {b_col}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600;'>{b_txt}</span>
+            </div>
+            <div style='margin-top: 8px; font-size: 0.75rem; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 6px;'>
+                Regime: <em>{c_desc_short}</em>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
@@ -132,11 +280,44 @@ st.sidebar.markdown(
 st.sidebar.info("💡 **Tip**: Switch tabs to inspect individual hoblis, regional cluster patterns, data quality audits, and baseline comparisons.")
 
 # ------------------------------------------------------------------------------
-# APPLICATION HEADER
+# APPLICATION HERO HEADER & COMMAND BAR
 # ------------------------------------------------------------------------------
-st.title("🌧️ Karnataka Hobli-Level Rainfall Deviation & Drought-Risk Prediction")
 st.markdown(
-    f"**Selected Station:** `{selected_hobli}` | **Taluk:** `{selected_taluk}` | **District:** `{selected_district}`"
+    f"""
+    <div style='background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0369a1 100%);
+                padding: 22px 26px; border-radius: 14px; color: white; margin-bottom: 22px;
+                box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);'>
+        <div style='display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;'>
+            <div>
+                <h1 style='margin: 0; font-size: 1.85rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;'>
+                    🌧️ Project Varuna: Karnataka Hobli Rainfall Intelligence
+                </h1>
+                <div style='font-size: 0.92rem; color: #94a3b8; margin-top: 4px;'>
+                    Official KSNDMC Sub-Taluk Meteorological Analytics & Predictive Machine Learning Platform
+                </div>
+            </div>
+            <div style='display: flex; gap: 8px; flex-wrap: wrap;'>
+                <span style='background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); color: #f8fafc; padding: 4px 12px; border-radius: 20px; font-size: 0.80rem; font-weight: 500;'>📍 31 Districts</span>
+                <span style='background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); color: #f8fafc; padding: 4px 12px; border-radius: 20px; font-size: 0.80rem; font-weight: 500;'>🌐 877 Stations</span>
+                <span style='background: rgba(2, 132, 199, 0.45); border: 1px solid rgba(2, 132, 199, 0.7); color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 0.80rem; font-weight: 600;'>🔮 2026–2027 Projections</span>
+            </div>
+        </div>
+        <div style='margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;'>
+            <div style='display: flex; align-items: center; gap: 8px; font-size: 0.88rem;'>
+                <span style='color: #38bdf8; font-weight: 600;'>Active Station:</span>
+                <span style='background: rgba(255,255,255,0.18); color: white; padding: 2px 10px; border-radius: 6px; font-weight: 600;'>{selected_district}</span>
+                <span style='color: #94a3b8;'>›</span>
+                <span style='background: rgba(255,255,255,0.18); color: white; padding: 2px 10px; border-radius: 6px; font-weight: 600;'>{selected_taluk}</span>
+                <span style='color: #94a3b8;'>›</span>
+                <span style='background: #0284c7; color: white; padding: 2px 10px; border-radius: 6px; font-weight: 700;'>{selected_hobli}</span>
+            </div>
+            <div style='font-size: 0.80rem; color: #94a3b8;'>
+                Data Source: KSNDMC Open Portal (2020–2025)
+            </div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 # ------------------------------------------------------------------------------
@@ -185,6 +366,72 @@ with tab1:
     # If duplicate sub-stations exist in same hobli name (e.g. Sarjapura_1), take first occurrence per year
     station_clean = station_clean.drop_duplicates(subset=["year"]).reset_index(drop=True)
 
+    # --------------------------------------------------------------------------
+    # TOP KPI SUMMARY METRICS GRID
+    # --------------------------------------------------------------------------
+    if len(station_clean) > 0:
+        latest_obs = station_clean.iloc[-1]
+        norm_v = latest_obs["normal_mm"]
+        act_v = latest_obs["actual_mm"]
+        dep_v = latest_obs["departure_pct"]
+        yr_v = int(latest_obs["year"])
+
+        st_cl = df_clusters[
+            (df_clusters["district"] == selected_district) &
+            (df_clusters["taluk"] == selected_taluk) &
+            (df_clusters["hobli"] == selected_hobli)
+        ]
+        cl_name = st_cl.iloc[0]["cluster_name"] if len(st_cl) > 0 else "Semi-Arid Plain"
+
+        dep_badge_col = "#10b981" if (-20.0 <= dep_v <= 40.0) else ("#ef4444" if dep_v < -20.0 else "#0284c7")
+        dep_badge_txt = "Normal" if (-20.0 <= dep_v <= 40.0) else ("Deficit" if dep_v < -20.0 else "Excess")
+
+        kpi_c1, kpi_c2, kpi_c3, kpi_c4 = st.columns(4)
+        with kpi_c1:
+            st.markdown(
+                f"""
+                <div class='kpi-card'>
+                    <div class='kpi-label'>Normal Baseline</div>
+                    <div class='kpi-value'>{norm_v:.1f} <span style='font-size: 0.85rem; font-weight: 500; color: #64748b;'>mm</span></div>
+                    <div class='kpi-sub'>Long-term benchmark</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        with kpi_c2:
+            st.markdown(
+                f"""
+                <div class='kpi-card'>
+                    <div class='kpi-label'>{yr_v} Actual Observed</div>
+                    <div class='kpi-value'>{act_v:.1f} <span style='font-size: 0.85rem; font-weight: 500; color: #64748b;'>mm</span></div>
+                    <div class='kpi-sub'>Delta: <strong>{act_v - norm_v:+.1f} mm</strong></div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        with kpi_c3:
+            st.markdown(
+                f"""
+                <div class='kpi-card'>
+                    <div class='kpi-label'>{yr_v} Departure</div>
+                    <div class='kpi-value' style='color: {dep_badge_col};'>{dep_v:+.1f}%</div>
+                    <div class='kpi-sub'><span style='background: {dep_badge_col}; color: white; padding: 1px 7px; border-radius: 8px; font-size: 0.72rem; font-weight: 600;'>{dep_badge_txt} Regime</span></div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        with kpi_c4:
+            st.markdown(
+                f"""
+                <div class='kpi-card'>
+                    <div class='kpi-label'>Climatological Regime</div>
+                    <div style='font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-top: 5px; line-height: 1.3;'>{cl_name}</div>
+                    <div class='kpi-sub'>K-Means (k=4) Cluster</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
     col_hist1, col_hist2 = st.columns([3, 2])
 
     with col_hist1:
@@ -201,15 +448,15 @@ with tab1:
                 x=chart_df["year_str"],
                 y=chart_df["actual_mm"],
                 name="Actual Rainfall (mm)",
-                marker_color="#1f77b4"
+                marker_color="#0284c7"
             ))
             fig.add_trace(go.Scatter(
                 x=chart_df["year_str"],
                 y=chart_df["normal_mm"],
                 name="Normal Baseline (mm)",
                 mode="lines+markers",
-                line=dict(color="#d62728", width=3, dash="dash"),
-                marker=dict(size=8, color="#d62728")
+                line=dict(color="#ef4444", width=3, dash="dash"),
+                marker=dict(size=8, color="#ef4444")
             ))
             fig.update_layout(
                 xaxis_title="Observed Calendar Year",
@@ -217,7 +464,9 @@ with tab1:
                 barmode="group",
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 margin=dict(l=20, r=20, t=30, b=20),
-                height=340
+                height=340,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)"
             )
             st.plotly_chart(fig, use_container_width=True)
         else:
@@ -228,6 +477,9 @@ with tab1:
         st.caption(r"KSNDMC thresholds: Deficit $\le -20\%$, Excess $\ge +40\%$, Stable $-20\%$ to $+40\%$.")
 
         if len(station_clean) > 0:
+            latest_r = station_clean.iloc[-1]
+            st.plotly_chart(plot_departure_gauge(latest_r["departure_pct"], f"{int(latest_r['year'])} Departure Gauge"), use_container_width=True)
+
             for _, r in station_clean.iterrows():
                 yr = int(r["year"])
                 act = r["actual_mm"]
@@ -415,6 +667,36 @@ with tab_future:
             st.error(f"Error computing live projection: {e}")
 
     if len(st_future) > 0:
+        # Scenario Simulator Controls
+        st.markdown(
+            """
+            <div style='background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);'>
+                <div style='display: flex; justify-content: space-between; align-items: center;'>
+                    <div>
+                        <h4 style='margin: 0; font-size: 1.05rem; color: #0f172a;'>🧪 Interactive Monsoon Shift Simulator</h4>
+                        <div style='font-size: 0.84rem; color: #64748b; margin-top: 2px;'>
+                            Simulate regional climate perturbations (e.g. El Niño drought or IOD surplus) to test station vulnerability:
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        sim_shift = st.slider(
+            "Simulate Precipitation Shift (% departure perturbation)",
+            min_value=-30,
+            max_value=30,
+            value=0,
+            step=5,
+            format="%+d%%",
+            help="Adjust this slider to simulate how a macro-climatic shift (like a -15% El Niño deficit) would alter forecasted millimeters."
+        )
+
+        if sim_shift != 0:
+            st.info(f"⚡ **Active Simulation**: Applied a **{sim_shift:+d}%** perturbation to baseline model projections.")
+
         # Forecast Cards
         col_f26, col_f27 = st.columns(2)
 
@@ -424,28 +706,36 @@ with tab_future:
         for col, p_row, yr, margin in [(col_f26, p26, 2026, "±24.4%"), (col_f27, p27, 2027, "±32.9%")]:
             with col:
                 if p_row is not None:
-                    pred_act = p_row["predicted_actual_mm"]
                     norm = p_row["normal_mm"]
-                    dep = p_row["predicted_departure_pct"]
-                    low_act = p_row["lower_actual_mm"]
-                    high_act = p_row["upper_actual_mm"]
-                    zone = p_row["risk_zone"]
+                    base_dep = p_row["predicted_departure_pct"]
+                    dep = base_dep + sim_shift
+                    pred_act = max(0.0, norm * (1.0 + dep / 100.0))
 
-                    badge_color = "#198754" if zone == "stable" else ("#dc3545" if zone == "drought_prone" else "#0d6efd")
+                    multiplier = 1.0 if yr == 2026 else 1.35
+                    margin_pct = 24.4 * multiplier
+                    low_act = max(0.0, norm * (1.0 + (dep - margin_pct) / 100.0))
+                    high_act = max(0.0, norm * (1.0 + (dep + margin_pct) / 100.0))
+
+                    zone = "drought_prone" if dep <= -20.0 else ("flood_prone" if dep >= 40.0 else "stable")
+                    badge_color = "#10b981" if zone == "stable" else ("#ef4444" if zone == "drought_prone" else "#0284c7")
                     zone_title = "Stable" if zone == "stable" else ("Drought-Prone" if zone == "drought_prone" else "Flood-Prone")
+
+                    sim_tag = f"<span style='background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; margin-left: 6px;'>SIMULATED ({sim_shift:+d}%)</span>" if sim_shift != 0 else ""
 
                     st.markdown(
                         f"""
-                        <div style='background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.04);'>
-                            <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;'>
-                                <h3 style='margin: 0; color: #1e293b;'>🗓️ Calendar Year {yr} Forecast</h3>
-                                <span style='background-color: {badge_color}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600;'>{zone_title}</span>
+                        <div style='background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04); margin-bottom: 12px;'>
+                            <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;'>
+                                <h3 style='margin: 0; font-size: 1.15rem; color: #1e293b;'>🗓️ Calendar Year {yr} Forecast {sim_tag}</h3>
+                                <span style='background-color: {badge_color}; color: white; padding: 3px 12px; border-radius: 12px; font-size: 0.80rem; font-weight: 700;'>{zone_title}</span>
                             </div>
-                            <div style='font-size: 1.9em; font-weight: 700; color: #0284c7;'>{pred_act:.1f} mm</div>
-                            <div style='color: #64748b; font-size: 0.9em; margin-bottom: 8px;'>Normal Baseline: <strong>{norm:.1f} mm</strong> | Departure: <strong style='color: {'#dc3545' if dep < 0 else '#0284c7'};'>{dep:+.1f}%</strong></div>
-                            <div style='background-color: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 0.85em; color: #334155;'>
-                                <strong>Uncertainty Band ({margin}):</strong><br/>
-                                Rainfall: {low_act:.1f} mm – {high_act:.1f} mm
+                            <div style='font-size: 2.1rem; font-weight: 800; color: #0284c7; line-height: 1.2;'>{pred_act:.1f} <span style='font-size: 1.0rem; font-weight: 600; color: #64748b;'>mm</span></div>
+                            <div style='color: #64748b; font-size: 0.88rem; margin: 6px 0 12px 0;'>
+                                Normal Baseline: <strong>{norm:.1f} mm</strong> | Departure: <strong style='color: {'#ef4444' if dep < 0 else '#0284c7'};'>{dep:+.1f}%</strong>
+                            </div>
+                            <div style='background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; font-size: 0.84rem; color: #334155;'>
+                                <strong>Confidence Interval ({margin}):</strong><br/>
+                                Expected Range: <strong>{low_act:.1f} mm – {high_act:.1f} mm</strong>
                             </div>
                         </div>
                         """,
@@ -458,9 +748,9 @@ with tab_future:
                     p_flood = p_row.get("prob_flood_prone", 0.0)
 
                     fig_p = go.Figure()
-                    fig_p.add_trace(go.Bar(name="Drought", y=["Risk"], x=[p_drought], orientation="h", marker_color="#dc3545", text=f"{p_drought*100:.0f}%", textposition="auto"))
-                    fig_p.add_trace(go.Bar(name="Stable", y=["Risk"], x=[p_stable], orientation="h", marker_color="#198754", text=f"{p_stable*100:.0f}%", textposition="auto"))
-                    fig_p.add_trace(go.Bar(name="Flood", y=["Risk"], x=[p_flood], orientation="h", marker_color="#0d6efd", text=f"{p_flood*100:.0f}%", textposition="auto"))
+                    fig_p.add_trace(go.Bar(name="Drought", y=["Risk"], x=[p_drought], orientation="h", marker_color="#ef4444", text=f"Drought: {p_drought*100:.0f}%", textposition="auto"))
+                    fig_p.add_trace(go.Bar(name="Stable", y=["Risk"], x=[p_stable], orientation="h", marker_color="#10b981", text=f"Stable: {p_stable*100:.0f}%", textposition="auto"))
+                    fig_p.add_trace(go.Bar(name="Flood", y=["Risk"], x=[p_flood], orientation="h", marker_color="#0284c7", text=f"Flood: {p_flood*100:.0f}%", textposition="auto"))
                     fig_p.update_layout(
                         barmode="stack",
                         height=90,
