@@ -37,62 +37,21 @@ While synoptic state and district-level forecasts mask extreme micro-climatic ra
 
 ---
 
-## 📸 Interactive Web Application Screenshots
+## 🧭 Application Modules
 
-The deployed Streamlit application at **[varuna-ml.streamlit.app](https://varuna-ml.streamlit.app/)** is organized into 5 specialized analytical modules:
+The Streamlit workspace at **[varuna-ml.streamlit.app](https://varuna-ml.streamlit.app/)** is a single analytical shell rather than a row of tabs: a persistent station selector (district → taluk → hobli) sits in the sidebar, five analytical modules occupy the reading pane, and a Daylight / Night watch switch changes the theme without touching any analytical state.
 
-### 1. Tab 1: Hobli Station Report & Live Risk Assessment
-> *Live station trajectory, suspect normal warning banners, historical actual vs. normal rainfall comparisons, and 2025 model inference with calibrated class probabilities.*
+| Module | Scope | What it contains |
+| :--- | :--- | :--- |
+| **01 · Hobli Intelligence** | One station | Observed rainfall history against the station normal, the KSNDMC departure meter, the annual register (2023 marked as not published), the 2025 hold-out classifier verdict with class probabilities, taluk and district context, and the 2026–2027 projection with a rainfall-shift simulator. |
+| **02 · Risk Zones** | Climatology | The k=4 K-Means regimes as a labelled atlas, mean-departure and volatility charts, and a filterable chronic-deficit registry with suspect-normal flags. |
+| **03 · District Intelligence** | Regional | A 31-district × 5-season departure matrix (no fabricated coordinates), the station-year anomaly distribution, regime composition by season, and district ranking with a focused trajectory. |
+| **04 · Data Audit** | Provenance | The raw-to-clean flow, the per-season transformation ledger, five normalization findings, and the 338 flagged baseline normals including the Agumbe case study. |
+| **05 · Model Evidence** | Evaluation | The accuracy paradox against honest baselines, macro-F1 with district-grouped cross-validation, the full `models/results.csv` table, class balance, regression MAE, and stated limitations. |
 
-<div align="center">
-  <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab1_hobli_report.png" alt="Tab 1: Hobli Station Report" width="100%" />
-  </a>
-</div>
+Every module reads the existing artifacts in `data/`, `models/` and `reports/` and calls `src/predict_risk.py` for inference. Nothing is retrained, recomputed or synthesized for display, and no map is drawn because the source tables carry no coordinates.
 
-<br/>
-
-### 2. Tab 2: Climatological Risk Zones & Clustering ($k=4$)
-> *Longitudinal K-Means clustering aggregated to one vector per station across five years ($k=4$, silhouette score 0.3406), identifying 123 chronic deficit-vulnerable hoblis.*
-
-<div align="center">
-  <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab2_risk_zones.png" alt="Tab 2: Risk Zones & Clustering" width="100%" />
-  </a>
-</div>
-
-<br/>
-
-### 3. Tab 3: Macro-Climatic Spatial Heatmap (No Fabricated Coordinates)
-> *Because raw KSNDMC records contain no latitude/longitude coordinates, coordinates were NOT fabricated. An interactive 31-District Departure Heatmap replaces coarse spatial maps.*
-
-<div align="center">
-  <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab3_district_heatmap.png" alt="Tab 3: District Departure Heatmap" width="100%" />
-  </a>
-</div>
-
-<br/>
-
-### 4. Tab 4: Data Quality & Normalization Audit
-> *Raw vs. clean pipeline reduction metrics (5,636 raw records down to 4,250 clean station-years), duplicate block resolution, and suspect normal catalogs.*
-
-<div align="center">
-  <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab4_data_quality.png" alt="Tab 4: Data Quality Audit" width="100%" />
-  </a>
-</div>
-
-<br/>
-
-### 5. Tab 5: Model Limits & Honest Baseline Comparisons
-> *Transparent empirical results showing that while the majority baseline achieves 79.65% accuracy by guessing "stable" everywhere (0% drought recall), Random Forest detects localized moisture stress.*
-
-<div align="center">
-  <a href="https://varuna-ml.streamlit.app/">
-    <img src="docs/images/screenshot_tab5_model_limits.png" alt="Tab 5: Model Limits and Baselines" width="100%" />
-  </a>
-</div>
+> Screenshots under `docs/images/` predate the current interface and are retained only as a historical record of the earlier tab layout.
 
 ---
 
@@ -157,13 +116,13 @@ Real-world meteorological data from state monitoring centres is rife with admini
                                          │
                                          ▼
 +-----------------------------------------------------------------------------------+
-|              STAGE 4: Interactive Application & Reporting (app/app.py)            |
-|  - Streamlit multi-tab interface with dependent dropdowns (District->Taluk->Hobli)|
+|        STAGE 4: Analytical Interface & Reporting (app/app.py + app/varuna/)       |
+|  - Single shell: sidebar station selector, five modules, light/dark theming       |
 |  - Live inference via src/predict_risk.py with class probability distribution     |
-|  - Climatological cluster explorer & filterable chronic-deficit registry          |
-|  - District departure heatmap replacing spatial map without coordinates           |
-|  - Full transparency on data quality and machine learning model limits            |
-|  - Deployed publicly on Streamlit Cloud: https://varuna-ml.streamlit.app/        |
+|  - Climatological cluster atlas & filterable chronic-deficit registry             |
+|  - District departure matrix replacing spatial maps (no source coordinates)       |
+|  - Explicit data-quality audit and honest model-limit reporting                   |
+|  - Deployed publicly on Streamlit Cloud: https://varuna-ml.streamlit.app/         |
 +-----------------------------------------------------------------------------------+
 ```
 
@@ -179,7 +138,14 @@ ml-project/
 ├── README.md                          # Project documentation and reproduction guide
 ├── requirements.txt                   # Production Python dependencies
 ├── app/
-│   └── app.py                         # Streamlit multi-tab decision-support web app
+│   ├── app.py                         # Streamlit shell: navigation, station selector, theming
+│   └── varuna/                        # Design system, data access, charts and the five modules
+│       ├── config.py                  # Thresholds, cluster profiles, cleaning ledger, limitations
+│       ├── data.py                    # Cached read-only loaders over the prepared artifacts
+│       ├── theme.py                   # Daylight / Night watch token system and component CSS
+│       ├── ui.py                      # Semantic HTML components (tables, meters, tiles, findings)
+│       ├── charts.py                  # Plotly chart builders using the shared chart grammar
+│       └── modules/                   # hobli · zones · districts · quality · models
 ├── data/
 │   ├── raw/                           # Standardized raw CSV files (5 years)
 │   ├── clean/
@@ -190,7 +156,7 @@ ml-project/
 │       ├── hobli_clusters.csv         # Exported k=4 climatological cluster profiles
 │       └── README.md                  # Comprehensive feature dictionary and target contracts
 ├── docs/
-│   ├── images/                        # High-resolution SVG banners and UI screenshots
+│   ├── images/                        # Banner and legacy screenshots from the earlier tab layout
 │   │   ├── app_banner.svg             # Main project header banner
 │   │   ├── screenshot_tab1_hobli_report.svg
 │   │   ├── screenshot_tab2_risk_zones.svg
@@ -363,7 +329,7 @@ This project was developed collaboratively as a 4-person academic machine learni
   - Delivery: `src/train_models.py`, `src/predict_risk.py`, `models/*`, `reports/modelling_report.md`.
 
 - **Person 4 (Application Engineering, System Integration, Documentation & Defense Preparation)**:
-  - Streamlit web application development (`app/app.py`), cluster labels export (`src/export_cluster_labels.py`), and headless smoke testing (`scripts/smoke_test_app.py`).
+  - Streamlit web application development (`app/app.py` and the `app/varuna/` module package), cluster labels export (`src/export_cluster_labels.py`), and headless smoke testing (`scripts/smoke_test_app.py`).
   - Production deployment to Streamlit Community Cloud at **[varuna-ml.streamlit.app](https://varuna-ml.streamlit.app/)**.
   - System integration, dependencies specification (`requirements.txt`), and comprehensive documentation (`README.md`).
   - Final academic report (`reports/final_report.md`), 10-slide presentation deck (`docs/presentation_outline.md`), and 20 viva examination defense responses (`docs/viva_qa.md`).
