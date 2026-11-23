@@ -33,7 +33,7 @@ st.set_page_config(
     page_title="VARUNA \u00b7 Karnataka Rainfall Intelligence",
     page_icon="\U0001f327",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
     menu_items={
         "About": (
             "VARUNA \u2014 hobli-level rainfall deviation and drought-risk analytics for "

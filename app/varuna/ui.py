@@ -282,8 +282,7 @@ def cluster_tiles(cluster_stats: dict, p: dict) -> str:
         tiles.append(
             f'<div class="v-tile">'
             f'<div class="v-tile__head">{glyph(cid, p)}'
-            f'<span class="v-tile__cid">CLUSTER {cid}</span>'
-            f'<span style="margin-left:auto">{chip(meta["short"], meta["tone"])}</span></div>'
+            f'<span class="v-tile__cid">CLUSTER {cid}</span></div>'
             f'<h3 class="v-tile__name" style="color:{color}">{esc(meta["name"])}</h3>'
             f'<div class="v-tile__desc">{esc(meta["desc"])}</div>'
             f'<div class="v-tile__grid">'

@@ -40,6 +40,9 @@ PALETTES = {
         "tint_amber": "rgba(154, 116, 47, 0.10)",
         "tint_ink": "rgba(18, 35, 42, 0.045)",
         "tint_green": "rgba(74, 117, 79, 0.08)",
+        "band_terra": "rgba(160, 78, 56, 0.16)",
+        "band_green": "rgba(74, 117, 79, 0.16)",
+        "band_rain": "rgba(42, 101, 132, 0.16)",
         "shadow": "rgba(18, 35, 42, 0.10)",
         "mode_label": "Daylight",
     },
@@ -66,6 +69,9 @@ PALETTES = {
         "tint_amber": "rgba(210, 167, 95, 0.11)",
         "tint_ink": "rgba(234, 229, 216, 0.05)",
         "tint_green": "rgba(131, 173, 134, 0.10)",
+        "band_terra": "rgba(210, 138, 108, 0.20)",
+        "band_green": "rgba(131, 173, 134, 0.20)",
+        "band_rain": "rgba(121, 176, 203, 0.20)",
         "shadow": "rgba(0, 0, 0, 0.45)",
         "mode_label": "Night watch",
     },
@@ -103,6 +109,9 @@ CSS = Template(
   --v-tint-terra: $tint_terra;
   --v-tint-amber: $tint_amber;
   --v-tint-green: $tint_green;
+  --v-band-terra: $band_terra;
+  --v-band-green: $band_green;
+  --v-band-rain: $band_rain;
   --v-serif: $serif;
   --v-sans: $sans;
   --v-mono: $mono;
@@ -260,7 +269,15 @@ footer { visibility: hidden; }
   background-color: var(--v-rain) !important;
   border-color: var(--v-rain) !important;
 }
-[data-testid="stSlider"] [data-testid="stSliderThumbValue"],
+[data-testid="stSlider"] [data-testid="stSliderThumbValue"] {
+  background-color: var(--v-rain) !important;
+  border-radius: 2px !important;
+}
+[data-testid="stSlider"] [data-testid="stSliderThumbValue"] p {
+  color: var(--v-bg) !important;
+  font-family: var(--v-mono) !important;
+  font-size: 0.68rem !important;
+}
 [data-testid="stSlider"] [data-testid="stSliderTickBarMin"],
 [data-testid="stSlider"] [data-testid="stSliderTickBarMax"] {
   color: var(--v-muted) !important;
@@ -329,8 +346,8 @@ footer { visibility: hidden; }
   background: var(--v-surface) !important;
 }
 [data-testid="stExpander"] summary { padding: 0.5rem 0.8rem; }
-[data-testid="stExpander"] summary p,
-[data-testid="stExpander"] summary span {
+[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] p,
+[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] span {
   font-family: var(--v-mono);
   font-size: 0.66rem;
   letter-spacing: 0.13em;
@@ -393,9 +410,9 @@ footer { visibility: hidden; }
 .v-meter__reading { font-family: var(--v-mono); font-size: 1.05rem; letter-spacing: -0.01em; }
 .v-meter__track { position: relative; height: 26px; border: 1px solid var(--v-line-strong); background: var(--v-surface); overflow: visible; }
 .v-meter__band { position: absolute; top: 0; bottom: 0; opacity: 0.9; }
-.v-meter__band--deficit { background: var(--v-tint-terra); }
-.v-meter__band--stable { background: var(--v-tint-green); }
-.v-meter__band--excess { background: var(--v-tint-rain); }
+.v-meter__band--deficit { background: var(--v-band-terra); }
+.v-meter__band--stable { background: var(--v-band-green); }
+.v-meter__band--excess { background: var(--v-band-rain); }
 .v-meter__zero { position: absolute; top: -4px; bottom: -4px; width: 1px; background: var(--v-line-strong); }
 .v-meter__marker { position: absolute; top: -7px; bottom: -7px; width: 2px; background: var(--v-ink); transition: left 0.35s ease; }
 .v-meter__marker::after { content: ""; position: absolute; left: -4px; top: -4px; width: 10px; height: 10px; background: var(--v-ink); border-radius: 50%; }
@@ -473,7 +490,9 @@ footer { visibility: hidden; }
 /* -------------------------------------------------------------- tiles --- */
 .v-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); border-top: 1px solid var(--v-line-strong); border-left: 1px solid var(--v-line); margin-top: 0.5rem; }
 .v-tile { border-right: 1px solid var(--v-line); border-bottom: 1px solid var(--v-line); padding: 1rem 1.05rem 1.1rem 1.05rem; background: var(--v-surface); min-width: 0; }
-.v-tile__head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.55rem; }
+.v-tile__head { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem 0.5rem; margin-bottom: 0.55rem; }
+.v-tile__head .v-chip { white-space: normal; }
+.v-tile__head > span:last-child { margin-left: auto; }
 .v-glyph { width: 15px; height: 15px; flex: 0 0 15px; }
 .v-tile__cid { font-family: var(--v-mono); font-size: 0.6rem; letter-spacing: 0.12em; color: var(--v-muted); }
 .v-tile__name { font-family: var(--v-serif); font-size: 1.02rem; line-height: 1.25; margin: 0.2rem 0 0.4rem 0; color: var(--v-ink); font-weight: 600; }
@@ -522,9 +541,18 @@ footer { visibility: hidden; }
   [data-testid="stMainBlockContainer"] { padding: 2rem 1.5rem 2.6rem 1.5rem; }
   .v-page__grid { grid-template-columns: 1fr; gap: 1.2rem; }
   .v-dossier { grid-template-columns: 1fr; gap: 1rem; }
+  [data-testid="stMain"] [data-testid="stHorizontalBlock"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  [data-testid="stMain"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
 }
 @media (max-width: 720px) {
-  [data-testid="stMainBlockContainer"] { padding: 1.6rem 1rem 2.2rem 1rem; }
+  [data-testid="stMainBlockContainer"] { padding: 3.1rem 1rem 2.2rem 1rem; }
   .v-page h1 { font-size: 1.95rem; }
   .v-lede { font-size: 0.9rem; }
   .v-meta { grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
@@ -568,7 +596,7 @@ def css_for(theme: str) -> str:
 # ------------------------------------------------------------------ charts --
 def style_figure(fig, p, height=320, legend=True, x_grid=False, y_grid=True, margin=None):
     """Apply the Varuna chart grammar to a Plotly figure."""
-    margin = margin or dict(l=6, r=10, t=34 if legend else 12, b=6)
+    margin = margin or dict(l=8, r=10, t=58 if legend else 12, b=6)
     fig.update_layout(
         height=height,
         margin=margin,

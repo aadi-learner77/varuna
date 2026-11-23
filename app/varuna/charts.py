@@ -76,10 +76,10 @@ def _gap_marker(fig, p: dict, *, y=1.0):
     )
     fig.add_annotation(
         x=MISSING_YEAR,
-        y=y,
+        y=0.985,
         yref="paper",
         text="2023 \u00b7 not published",
-        **_annotation(p, yanchor="bottom", font=dict(family=MONO, size=8.5, color=p["muted"])),
+        **_annotation(p, yanchor="top", font=dict(family=MONO, size=8.5, color=p["muted"])),
     )
 
 
@@ -148,14 +148,14 @@ def outlook_trajectory(hist: pd.DataFrame, future: pd.DataFrame, p: dict) -> go.
             fillcolor=p["tint_rain"],
             line=dict(width=0),
             hoverinfo="skip",
-            name="Forecast uncertainty band",
+            name="Uncertainty band",
             showlegend=True,
         )
         fig.add_scatter(
             x=years,
             y=[hist["actual_mm"].iloc[-1]] + future["predicted_actual_mm"].tolist(),
             mode="lines+markers",
-            name="Projected rainfall",
+            name="Projected",
             line=dict(color=_c(p, "rain"), width=2, dash="dot"),
             marker=dict(size=7, symbol="diamond", color=_c(p, "rain")),
             hovertemplate="%{x}<br>%{y:,.1f} mm projected<extra></extra>",
@@ -164,7 +164,7 @@ def outlook_trajectory(hist: pd.DataFrame, future: pd.DataFrame, p: dict) -> go.
         x=hist["year"],
         y=hist["actual_mm"],
         mode="lines+markers",
-        name="Observed rainfall",
+        name="Observed",
         line=dict(color=_c(p, "ink"), width=2),
         marker=dict(size=6, color=_c(p, "ink")),
         hovertemplate="%{x}<br>%{y:,.1f} mm observed<extra></extra>",
@@ -175,7 +175,7 @@ def outlook_trajectory(hist: pd.DataFrame, future: pd.DataFrame, p: dict) -> go.
         x=all_years,
         y=[normal] * len(all_years),
         mode="lines",
-        name=f"Normal \u00b7 {normal:,.0f} mm",
+        name="Normal",
         line=dict(color=_c(p, "muted"), width=1.2, dash="dash"),
         hovertemplate="Normal \u00b7 %{y:,.1f} mm<extra></extra>",
     )
@@ -189,7 +189,8 @@ def outlook_trajectory(hist: pd.DataFrame, future: pd.DataFrame, p: dict) -> go.
 # --------------------------------------------------------------- module 02 --
 def cluster_profiles(stats: dict, p: dict) -> go.Figure:
     order = sorted(stats)
-    names = [f"C{c} \u00b7 {CLUSTERS[c]['short']}" for c in order]
+    short_names = {0: "Ghats", 1: "Surplus", 2: "Stable", 3: "Deficit"}
+    names = [f"C{c} \u00b7 {short_names.get(c, CLUSTERS[c]['short'])}" for c in order]
     means = [stats[c]["departure"] for c in order]
     stds = [stats[c]["std"] for c in order]
     colors = [_c(p, CLUSTERS[c]["tone"]) for c in order]
@@ -200,10 +201,9 @@ def cluster_profiles(stats: dict, p: dict) -> go.Figure:
             orientation="h",
             marker=dict(color=colors, line=dict(width=0)),
             error_x=dict(type="data", array=stds, color=p["muted"], thickness=1, width=4),
-            text=[f"{m:+.1f}%  \u00b1{s:,.0f}" for m, s in zip(means, stds)],
-            textposition="outside",
-            textfont=dict(family=MONO, size=9.5, color=p["ink_soft"]),
-            hovertemplate="%{y}<br>mean departure %{x:+.2f}%<extra></extra>",
+            customdata=stds,
+            hovertemplate="%{y}<br>mean departure %{x:+.2f}%<br>station spread \u00b1%{customdata:.1f} pp<extra></extra>",
+            cliponaxis=False,
             width=0.55,
         )
     )
@@ -212,7 +212,13 @@ def cluster_profiles(stats: dict, p: dict) -> go.Figure:
         x=DROUGHT_THRESHOLD,
         line=dict(color=_c(p, "terra"), width=1, dash="dot"),
     )
-    fig.update_xaxes(title_text="five-year mean departure (%) \u00b7 whisker = station standard deviation", ticksuffix="%")
+    low = min(means) - max(stds) - 30
+    high = max(means) + max(stds) + 15
+    fig.update_xaxes(
+        title_text="five-year mean departure (%)",
+        ticksuffix="%",
+        range=[low, high],
+    )
     fig.update_yaxes(showgrid=False, autorange="reversed")
     style_figure(fig, p, height=290, legend=False)
     return fig
@@ -248,7 +254,7 @@ def cluster_map(clusters: pd.DataFrame, stats: dict, p: dict) -> go.Figure:
         )
     fig.update_xaxes(title_text="mean station normal (mm)")
     fig.update_yaxes(title_text="departure volatility (pp)")
-    style_figure(fig, p, height=330)
+    style_figure(fig, p, height=330, legend=False)
     return fig
 
 
@@ -505,7 +511,7 @@ def regression_mae(results: pd.DataFrame, p: dict) -> go.Figure:
             width=0.55,
         )
     )
-    fig.update_xaxes(title_text="2025 mean absolute error (percentage points)", ticksuffix="%", range=[0, 62])
+    fig.update_xaxes(title_text="2025 mean absolute error (percentage points)", ticksuffix="%", range=[0, 68])
     fig.update_yaxes(showgrid=False, tickfont=dict(family=MONO, size=9, color=p["ink_soft"]))
     style_figure(fig, p, height=270, legend=False)
     return fig
